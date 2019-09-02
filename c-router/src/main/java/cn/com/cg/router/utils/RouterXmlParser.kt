@@ -24,67 +24,6 @@ open class RouterXmlParser{
         }
 
 
-        open fun parseMethodMap(context: Context): HashMap<String, String>? {
-            return pullMethod(context, "CRouter.xml")
-        }
-
-
-
-        private fun pullMethod(context: Context, fileName: String): HashMap<String, String>?{
-            //获得一个pull解析器
-            val parser = Xml.newPullParser()
-            var map: HashMap<String, String>? = null
-            var clsPath: String? = null
-            var methodPath: String? = null
-            var ins: InputStream? = null
-            try {
-                ins = context.resources.assets.open(fileName)
-                //添加文档信息进pull解析器
-                parser.setInput(ins, "UTF-8")
-                //得到节点信息
-                var evtType = parser.eventType
-                while (evtType != XmlPullParser.END_DOCUMENT) {//如果不是文档结束节点
-                    when (evtType) {
-                        XmlPullParser.START_DOCUMENT //文档的开始
-                        -> map = HashMap()
-                        XmlPullParser.START_TAG       //开始标签
-                        -> {
-                            val tag = parser.name
-
-                            if ("ClassPath" == tag) {
-                                clsPath = parser.nextText()
-                            }
-                            if ("MethodPathItem" == tag) {
-                                methodPath = parser.nextText()
-                            }
-
-
-                        }
-                        XmlPullParser.END_TAG       //结束标签
-                        -> if ("MethodPathItem" == parser.name && clsPath != null && methodPath != null) {
-                            map?.put(methodPath!!, clsPath!!)
-                        }
-                    }
-                    evtType = parser.next()
-                }
-                return map
-            } catch (e:IOException) {
-                e.printStackTrace()
-            } catch (e: XmlPullParserException) {
-                e.printStackTrace()
-            } finally {
-                try {
-                    ins!!.close()
-                } catch (e: IOException) {
-                    e.printStackTrace()
-                }
-
-            }
-            return null
-        }
-
-
-
 
         /**
          * 解析assets路径下的router.xml
@@ -138,7 +77,9 @@ open class RouterXmlParser{
                         -> {
                             if ("CRouter" == parser.name && router != null) {
                                 router.methodIDs = cMethodIds!!
-                                map!![router.routerPath] = router
+                                try {
+                                    map!![router.routerPath] = router
+                                }catch (e:Exception){}
                                 router = null
                             }
                         }

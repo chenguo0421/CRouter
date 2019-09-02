@@ -154,11 +154,12 @@ def write(xmlPath,list):
             nodeRouterPath = doc.createElement('RouterPath')
             # 给叶子节点RouterPath设置一个文本节点，用于显示文本内容
             nodeRouterPath.appendChild(doc.createTextNode(str(bean.clsAnnotation[0])))
+            nodeCRouter.appendChild(nodeRouterPath)
 
         nodeClassPath = doc.createElement("ClassPath")
         nodeClassPath.appendChild(doc.createTextNode(str(bean.clsPath)))
 
-        nodeCRouter.appendChild(nodeRouterPath)
+
         nodeCRouter.appendChild(nodeClassPath)
 
         if len(bean.methodAnnotation) > 0:

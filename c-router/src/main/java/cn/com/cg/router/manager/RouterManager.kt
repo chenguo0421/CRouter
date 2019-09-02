@@ -19,10 +19,7 @@ import java.util.*
  */
 class RouterManager private constructor(){
 
-    private lateinit var intent: Intent
-    private lateinit var context: Context
     var TAG : String? = "RouterManager"
-
 
     /**
      *单例
@@ -119,14 +116,16 @@ class RouterManager private constructor(){
     /**
      * 调用方法
      */
-    fun methodNavigation(vararg params:Any){
-        if(RouterManager.action == null){
+    fun callMethod(vararg params: Any): Any? {
+        if (RouterManager.action == null) {
             throw Exception("please with action first!")
         }
-        val clsPath: String? = RouterPathManager.getInstance().getClassNameByMethodPath(RouterManager.context!!.get()!!, RouterManager.action!!)
+        val clsPath: String? = RouterPathManager.getInstance()
+            .getClassPathByMethodPath(RouterManager.context!!.get()!!, RouterManager.action!!)
         if (clsPath != null) {
-            RouterMethodManager.getInstance().invoke(clsPath,action,*params)
+            return RouterMethodManager.getInstance().invoke(clsPath, action, *params)
         }
+        return null
     }
 
     /**

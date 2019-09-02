@@ -12,8 +12,20 @@ import java.lang.ref.SoftReference
  */
 class RouterBeanManager{
 
+    /**
+     * Activity实例
+     */
     private var actMap:HashMap<String,SoftReference<CRouterBaseActivity>>? = null
+    /**
+     * Fragment实例
+     */
     private var fmMap:HashMap<String,SoftReference<CRouterBaseFragment>>? = null
+
+    /**
+     * 其他工具类实例
+     */
+    private var utilMap: HashMap<String, SoftReference<Any?>>? = null
+
 
     fun registerAct(obj: CRouterBaseActivity) {
         actMap?.put(obj::class.qualifiedName!!,SoftReference(obj))
@@ -21,6 +33,14 @@ class RouterBeanManager{
 
     fun registerFM(obj: CRouterBaseFragment) {
         fmMap?.put(obj::class.qualifiedName!!,SoftReference(obj))
+    }
+
+    fun unRegisterAct(obj: CRouterBaseActivity) {
+        actMap?.remove(obj::class.qualifiedName!!)
+    }
+
+    fun unRegisterFM(obj: CRouterBaseFragment) {
+        fmMap?.remove(obj::class.qualifiedName!!)
     }
 
     fun getActBean(clsPath:String):CRouterBaseActivity?{
@@ -31,12 +51,22 @@ class RouterBeanManager{
         return fmMap!![clsPath]?.get()
     }
 
+    fun getOtherBean(clzPath: String): Any? {
+        if (utilMap!![clzPath]==null){
+            utilMap!![clzPath] = SoftReference(Class.forName(clzPath).newInstance())
+        }
+        return utilMap!![clzPath]?.get()
+    }
+
     private constructor(){
         if (actMap == null) {
             actMap = HashMap()
         }
         if (fmMap == null) {
             fmMap = HashMap()
+        }
+        if (utilMap == null) {
+            utilMap = HashMap()
         }
     }
 

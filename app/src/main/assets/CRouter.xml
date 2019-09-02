@@ -8,6 +8,12 @@
 			</MethodPath>
 		</CRouter>
 		<CRouter>
+			<ClassPath>cn.com.cg.testmodule1.utils.MyUtils</ClassPath>
+			<MethodPath>
+				<MethodPathItem>/MyUtils/testCallUtilsMethod</MethodPathItem>
+			</MethodPath>
+		</CRouter>
+		<CRouter>
 			<RouterPath>Test2Activity</RouterPath>
 			<ClassPath>cn.com.cg.testmodule2.Test2Activity</ClassPath>
 		</CRouter>

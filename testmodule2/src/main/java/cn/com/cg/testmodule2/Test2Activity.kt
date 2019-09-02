@@ -34,6 +34,10 @@ class Test2Activity : CRouterBaseActivity(){
         btn2.setOnClickListener {
             callMethodByMethodPath()
         }
+
+        btn3.setOnClickListener {
+            callUtilsMethodByMethodPath()
+        }
     }
 
 
@@ -41,8 +45,18 @@ class Test2Activity : CRouterBaseActivity(){
      * 通过方法注解向Test1Activity回调数据
      */
     private fun callMethodByMethodPath() {
-        RouterManager.getInstance().with(this).action("/Test1Activity/onT2CallBack").methodNavigation("hello word")
-        finish()
+        val msg = RouterManager.getInstance().with(this).action("/Test1Activity/onT2CallBack").callMethod("hello word")
+        tv2.text = msg.toString()
+//        finish()
+    }
+
+    /**
+     * 通过方法注解向Test1Activity回调数据
+     */
+    private fun callUtilsMethodByMethodPath() {
+        val msg = RouterManager.getInstance().with(this).action("/MyUtils/testCallUtilsMethod").callMethod("hello word")
+        tv2.text = msg.toString()
+//        finish()
     }
 
 

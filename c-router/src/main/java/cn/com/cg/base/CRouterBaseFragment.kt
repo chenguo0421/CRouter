@@ -15,4 +15,9 @@ open class CRouterBaseFragment:BaseFragment() {
         super.onViewCreated(view, savedInstanceState)
         RouterBeanManager.getInstance().registerFM(this)
     }
+
+    override fun onDestroy() {
+        RouterBeanManager.getInstance().unRegisterFM(this)
+        super.onDestroy()
+    }
 }

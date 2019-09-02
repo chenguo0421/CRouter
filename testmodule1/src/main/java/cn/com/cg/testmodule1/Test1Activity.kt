@@ -48,8 +48,9 @@ class Test1Activity : CRouterBaseActivity(), View.OnClickListener, RouterCallBac
      * 通过注解反射回调
      */
     @CMethod("/Test1Activity/onT2CallBack")
-    fun onT2InvokeCallBack(vararg params:Any){
+    fun onT2InvokeCallBack(vararg params:Any): String {
         back_tv.text = params[0].toString()
+        return "hello t2,i am t1"
     }
 
 

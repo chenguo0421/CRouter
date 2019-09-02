@@ -17,16 +17,31 @@ class RouterMethodManager {
 
 
 
-    fun invoke(clzPath: String?, action: String?,vararg params:Any) {
+    fun invoke(clzPath: String?, action: String?,vararg params:Any): Any? {
+
         when {
-            invokeActivity(clzPath,action,params) -> return
-            invokeFragment(clzPath,action,params) -> return
-            else -> invokeOthers(clzPath,action,params)
+            invokeActivity(clzPath).size > 0 -> {
+                return invokeMethod(invokeActivity(clzPath), RouterBeanManager.getInstance().getActBean(clzPath!!), action, params)
+            }
+            invokeFragment(clzPath).size > 0 -> {
+                return invokeMethod(invokeFragment(clzPath), RouterBeanManager.getInstance().getFMBean(clzPath!!), action, params)
+            }
+            invokeOthers(clzPath).size > 0 -> {
+                return invokeMethod(invokeOthers(clzPath), RouterBeanManager.getInstance().getOtherBean(clzPath!!), action, params)
+            }
         }
+        return null
+    }
+
+    private fun invokeMethod(tempMap:HashMap<String,Method>, cls: Any?, action: String?, vararg params:Any): Any? {
+        if (tempMap[action] != null) {
+            return tempMap[action]?.invoke(cls,*params)
+        }
+        return null
     }
 
 
-    private fun invokeOthers(clzPath: String?, action: String?,vararg params:Any) {
+    private fun invokeOthers(clzPath: String?):HashMap<String,Method> {
         var tempMap:HashMap<String,Method> = HashMap()
         try {
             val cls = Class.forName(clzPath!!)
@@ -37,18 +52,16 @@ class RouterMethodManager {
                     tempMap[cMethod.path] = method
                 }
             }
-            if (tempMap[action] != null) {
-                tempMap[action]?.invoke(cls,*params)
-            }
         }catch (e:Exception){
             e.printStackTrace()
         }
+        return tempMap
     }
 
-    private fun invokeFragment(clzPath: String?, action: String?,vararg params:Any): Boolean {
+    private fun invokeFragment(clzPath: String?): HashMap<String,Method> {
         var bean = RouterBeanManager.getInstance().getFMBean(clzPath!!)
+        val tempMap:HashMap<String,Method> = HashMap()
         if (bean != null) {
-            val tempMap:HashMap<String,Method> = HashMap()
             try {
                 var cls = Class.forName(clzPath)
                 val methods = cls.declaredMethods
@@ -58,21 +71,17 @@ class RouterMethodManager {
                         tempMap[cMethod.path] = method
                     }
                 }
-                if (tempMap[action] != null) {
-                    tempMap[action]?.invoke(bean,*params)
-                }
-                return true
             }catch (e:Exception){
                 e.printStackTrace()
             }
         }
-      return false
+      return tempMap
     }
 
-    private fun invokeActivity(clzPath: String?, action: String?,vararg params:Any): Boolean {
+    private fun invokeActivity(clzPath: String?): HashMap<String,Method> {
         var bean = RouterBeanManager.getInstance().getActBean(clzPath!!)
+        val tempMap:HashMap<String,Method> = HashMap()
         if (bean != null) {
-            val tempMap:HashMap<String,Method> = HashMap()
             try {
                 var cls = Class.forName(clzPath)
                 val methods = cls.declaredMethods
@@ -82,15 +91,11 @@ class RouterMethodManager {
                         tempMap[cMethod.path] = method
                     }
                 }
-                if (tempMap[action] != null) {
-                    tempMap[action]?.invoke(bean,*params)
-                }
-                return true
             }catch (e:Exception){
                 e.printStackTrace()
             }
         }
-        return false
+        return tempMap
     }
 
 

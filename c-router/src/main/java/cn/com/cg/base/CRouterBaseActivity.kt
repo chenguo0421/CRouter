@@ -14,4 +14,10 @@ open class CRouterBaseActivity:BaseActivity() {
         super.onCreate(savedInstanceState)
         RouterBeanManager.getInstance().registerAct(this)
     }
+
+
+    public override fun onDestroy() {
+        RouterBeanManager.getInstance().unRegisterAct(this)
+        super.onDestroy()
+    }
 }

@@ -1,15 +1,9 @@
 package cn.com.cg.router.manager.path
 
-import android.app.Activity
 import android.content.Context
-import androidx.appcompat.app.AppCompatActivity
-import androidx.fragment.app.DialogFragment
-import androidx.fragment.app.Fragment
 import cn.com.cg.router.bean.RouterBean
-import cn.com.cg.router.utils.AnnotationUtils
 import cn.com.cg.router.utils.RouterXmlParser
 import java.lang.Exception
-import java.lang.reflect.Method
 
 /**
  * Discription  {}
@@ -40,22 +34,27 @@ class RouterPathManager {
         RouterXmlParser.parseRouterMap(context,routerMap,methodMap)
     }
 
+    /**
+     * 通过CRouter注解值查询所在类路径
+     */
     fun getClassFromRouterPath(context:Context,routerPath: String):  Class<*>? {
         if (routerMap == null) {
             init(context)
         }
         var clsPath = routerMap?.get(routerPath)?.classPaths
         try {
-            var cls = Class.forName(clsPath!!)
-            return cls
+            return Class.forName(clsPath!!)
         }catch (e:Exception){}
         return null
     }
 
 
-    fun getClassNameByMethodPath(context: Context, action: String): String? {
+    /**
+     * 通过CMethod注解值查询所在类的路径
+     */
+    fun getClassPathByMethodPath(context: Context, action: String): String? {
         if (methodMap == null) {
-            methodMap = RouterXmlParser.parseMethodMap(context)
+            init(context)
         }
         return methodMap?.get(action)
     }
