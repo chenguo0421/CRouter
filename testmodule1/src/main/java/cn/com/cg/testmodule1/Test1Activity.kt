@@ -1,6 +1,7 @@
 package cn.com.cg.testmodule1
 
 import android.annotation.SuppressLint
+import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import cn.com.cg.base.BaseActivity
@@ -40,7 +41,16 @@ class Test1Activity : CRouterBaseActivity(), View.OnClickListener, RouterCallBac
      * 通过注解反射跳转到Test2Activity
      */
     private fun gotoT2() {
-        RouterManager.getInstance().with(this).action("Test2Activity").setCallBack(this).navigation()
+        val intent = Intent()
+        intent.flags = Intent.FLAG_ACTIVITY_SINGLE_TOP
+        RouterManager.getInstance()
+            .with(this)
+            .sharedElement(img)
+            .anim(R.anim.slide_in_left,R.anim.slide_out_right)
+            .action("Test2Activity")
+            .intent(intent)
+            .setCallBack(this)
+            .navigation()
     }
 
 

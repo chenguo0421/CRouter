@@ -4,6 +4,12 @@ import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
+import android.os.Build
+import android.view.View
+import android.view.animation.Animation
+import androidx.core.app.ActivityCompat
+import androidx.core.app.ActivityOptionsCompat
+import cn.com.cg.router.R
 import cn.com.cg.router.manager.callback.RouterCallBackManager
 import cn.com.cg.router.manager.intf.RouterCallBack
 import cn.com.cg.router.manager.method.RouterMethodManager
@@ -31,6 +37,9 @@ class RouterManager private constructor(){
         private @Volatile var action: String? = null
         private @Volatile var callBackID: String? = null
         private @Volatile var clsName: String? = null
+        private @Volatile var enterAnim: Int? = 0
+        private @Volatile var outerAnim: Int? = 0
+        private @Volatile var view: View? = null
         private @Volatile var context: SoftReference<Context>? = null
         fun getInstance(): RouterManager{
             if (Instance == null) {
@@ -44,6 +53,24 @@ class RouterManager private constructor(){
         }
     }
 
+    /**
+     * 共享元素
+     */
+    fun sharedElement(view:View): RouterManager{
+        RouterManager.view = view
+        return getInstance()
+    }
+
+
+    /**
+     * 设置页面切换动画
+     */
+    fun anim(enterAnim:Int,outerAnim:Int): RouterManager{
+        RouterManager.enterAnim = enterAnim
+        RouterManager.outerAnim = outerAnim
+        return getInstance()
+    }
+
 
     /**
      * 配置Context
@@ -53,6 +80,7 @@ class RouterManager private constructor(){
         return getInstance()
 
     }
+
 
     /**
      * 自定义Intent，启动方式由使用者去设置
@@ -111,6 +139,9 @@ class RouterManager private constructor(){
         RouterManager.intent = null
         RouterManager.callBackID = null
         RouterManager.clsName = null
+        RouterManager.enterAnim = 0
+        RouterManager.outerAnim = 0
+        RouterManager.view = null
     }
 
     /**
@@ -132,7 +163,15 @@ class RouterManager private constructor(){
      * 页面切换
      */
     private fun jumpActivity(context: Context, intent: Intent) {
-        context.startActivity(intent)
+        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP && context is Activity && RouterManager.view != null) {
+            val compat = ActivityOptionsCompat.makeSceneTransitionAnimation(context, RouterManager.view!!, RouterManager.view!!.transitionName!!)
+            ActivityCompat.startActivity(context, intent, compat.toBundle())//复制代码
+        } else {
+            context.startActivity(intent)
+            if (context is Activity && enterAnim != null && outerAnim != null) {
+                context.overridePendingTransition(enterAnim!!, outerAnim!!)
+            }
+        }
     }
 
     /**

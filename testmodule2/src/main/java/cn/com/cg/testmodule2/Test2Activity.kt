@@ -1,5 +1,6 @@
 package cn.com.cg.testmodule2
 
+import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import androidx.annotation.RequiresApi
@@ -38,6 +39,7 @@ class Test2Activity : CRouterBaseActivity(){
         btn3.setOnClickListener {
             callUtilsMethodByMethodPath()
         }
+
     }
 
 
@@ -45,18 +47,22 @@ class Test2Activity : CRouterBaseActivity(){
      * 通过方法注解向Test1Activity回调数据
      */
     private fun callMethodByMethodPath() {
-        val msg = RouterManager.getInstance().with(this).action("/Test1Activity/onT2CallBack").callMethod("hello word")
+        val msg = RouterManager.getInstance()
+            .with(this)
+            .action("/Test1Activity/onT2CallBack")
+            .callMethod("hello word")
         tv2.text = msg.toString()
-//        finish()
     }
 
     /**
      * 通过方法注解向Test1Activity回调数据
      */
     private fun callUtilsMethodByMethodPath() {
-        val msg = RouterManager.getInstance().with(this).action("/MyUtils/testCallUtilsMethod").callMethod("hello word")
+        val msg = RouterManager.getInstance()
+            .with(this)
+            .action("/MyUtils/testCallUtilsMethod")
+            .callMethod("hello word")
         tv2.text = msg.toString()
-//        finish()
     }
 
 
@@ -65,7 +71,8 @@ class Test2Activity : CRouterBaseActivity(){
      */
     private fun resultData() {
         var callbackData: String = "我来自第二页"
-        RouterManager.getInstance().onCallBack(callBackMethodID!!,callbackData)
+        RouterManager.getInstance()
+            .onCallBack(callBackMethodID!!,callbackData)
         finish()
     }
 
