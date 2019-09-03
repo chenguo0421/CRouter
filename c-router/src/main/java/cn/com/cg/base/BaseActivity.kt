@@ -3,6 +3,7 @@ package cn.com.cg.base
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import cn.com.cg.router.manager.RouterManager
+import cn.com.cg.router.manager.params.RouterParamsManager
 
 /**
  * Discription  {}
@@ -15,6 +16,6 @@ open class BaseActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        callBackMethodID = intent.getStringExtra(RouterManager.METHODCALLBACKID)
+        callBackMethodID = intent.getStringExtra(RouterParamsManager.METHODCALLBACKID)
     }
 }
