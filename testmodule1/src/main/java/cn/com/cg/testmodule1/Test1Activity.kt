@@ -1,17 +1,14 @@
 package cn.com.cg.testmodule1
 
-import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import cn.com.cg.base.BaseActivity
-import cn.com.cg.base.CRouterBaseActivity
 import cn.com.cg.router.annotation.CMethod
 import cn.com.cg.router.annotation.CRouter
 import cn.com.cg.router.manager.RouterManager
 import cn.com.cg.router.manager.intf.RouterCallBack
 import kotlinx.android.synthetic.main.t1_activity.*
-import java.util.*
 
 /**
  * Discription  {}
@@ -20,7 +17,7 @@ import java.util.*
  */
 
 @CRouter("Test1Activity")
-class Test1Activity : CRouterBaseActivity(), View.OnClickListener, RouterCallBack {
+class Test1Activity : BaseActivity(), View.OnClickListener, RouterCallBack {
 
     /**
      * 通过接口方法回调
@@ -33,7 +30,15 @@ class Test1Activity : CRouterBaseActivity(), View.OnClickListener, RouterCallBac
     override fun onClick(view: View?) {
         when(view?.id){
             R.id.btn1 -> gotoT2()
+            R.id.btn2 -> gotoFMActivity()
         }
+    }
+
+    private fun gotoFMActivity() {
+        RouterManager.getInstance()
+            .with(this)
+            .action("TestFMActivity")
+            .navigation()
     }
 
 
@@ -68,6 +73,7 @@ class Test1Activity : CRouterBaseActivity(), View.OnClickListener, RouterCallBac
         super.onCreate(savedInstanceState)
         setContentView(R.layout.t1_activity)
         btn1.setOnClickListener(this)
+        btn2.setOnClickListener(this)
     }
 }
 

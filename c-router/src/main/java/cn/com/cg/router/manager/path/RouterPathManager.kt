@@ -3,7 +3,6 @@ package cn.com.cg.router.manager.path
 import android.content.Context
 import cn.com.cg.router.bean.RouterBean
 import cn.com.cg.router.utils.RouterXmlParser
-import java.lang.Exception
 
 /**
  * Discription  {}
@@ -37,7 +36,7 @@ class RouterPathManager {
     /**
      * 通过CRouter注解值查询所在类路径
      */
-    fun getClassFromRouterPath(context:Context,routerPath: String):  Class<*>? {
+    fun findClassFromRouterPath(context:Context,routerPath: String):  Class<*>? {
         if (routerMap == null) {
             init(context)
         }
@@ -52,12 +51,35 @@ class RouterPathManager {
     /**
      * 通过CMethod注解值查询所在类的路径
      */
-    fun getClassPathByMethodPath(context: Context, action: String): String? {
+    fun findClassPathByMethodPath(context: Context, action: String): String? {
         if (methodMap == null) {
             init(context)
         }
         return methodMap?.get(action)
     }
+
+    /**
+     * 通过FragmentTag查找Fragment实体类
+     */
+    fun findRealPathByTag(clzPath: String?, tag: String?): String? {
+        val list = clzPath?.let { RouterBeanManager.getInstance().getFragmentTagsByClassPath(it) }
+        var isContain = false
+        if (list != null && list.size > 0) {
+            for (item in list){
+                if(tag.equals(item)){
+                    isContain = true
+                    break
+                }
+            }
+        }
+
+        return if (isContain){
+            clzPath + tag
+        }else{
+            clzPath
+        }
+    }
+
 
 
     companion object {

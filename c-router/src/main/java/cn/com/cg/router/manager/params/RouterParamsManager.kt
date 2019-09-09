@@ -20,6 +20,7 @@ open class RouterParamsManager {
         @Volatile var action: String? = null
         @Volatile var callBackID: String? = null
         @Volatile var clsName: String? = null
+        @Volatile var tag: String? = null
         @Volatile var enterAnim: Int? = 0
         @Volatile var outerAnim: Int? = 0
         @Volatile var view: SoftReference<View>? = null
@@ -36,6 +37,10 @@ open class RouterParamsManager {
             }
             return Instance!!.get()!!
         }
+    }
+
+    fun fragmentTag(tag:String){
+        RouterParamsManager.tag = tag
     }
 
 
@@ -73,6 +78,7 @@ open class RouterParamsManager {
         RouterParamsManager.enterAnim = 0
         RouterParamsManager.outerAnim = 0
         RouterParamsManager.view = null
+        RouterParamsManager.tag = null
     }
 
 }

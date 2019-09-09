@@ -1,7 +1,7 @@
 package cn.com.cg.base
 
 import android.app.Application
-import cn.com.cg.router.manager.path.RouterPathManager
+import cn.com.cg.router.manager.RouterManager
 
 /**
  * Discription  {}
@@ -12,6 +12,7 @@ open class CRouterApplication : Application() {
 
     override fun onCreate() {
         super.onCreate()
-        RouterPathManager.getInstance().init(this)
+        RouterManager.getInstance().init(this)
     }
+
 }

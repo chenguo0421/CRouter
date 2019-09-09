@@ -1,23 +1,20 @@
 package cn.com.cg.router.manager
 
-import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.os.Build
 import android.view.View
-import android.view.animation.Animation
 import androidx.core.app.ActivityCompat
 import androidx.core.app.ActivityOptionsCompat
-import cn.com.cg.router.R
+import cn.com.cg.base.BaseActivity
+import cn.com.cg.base.BaseFragment
 import cn.com.cg.router.manager.callback.RouterCallBackManager
 import cn.com.cg.router.manager.intf.RouterCallBack
 import cn.com.cg.router.manager.method.RouterMethodManager
 import cn.com.cg.router.manager.params.RouterParamsManager
 import cn.com.cg.router.manager.path.RouterPathManager
-import java.lang.Exception
 import java.lang.ref.SoftReference
-import java.util.*
 
 /**
  * Discription  {}
@@ -26,7 +23,7 @@ import java.util.*
  */
 class RouterManager private constructor(){
 
-    var TAG : String? = "RouterManager"
+    val TAG : String? = "RouterManager"
     /**
      *单例
      */
@@ -44,6 +41,26 @@ class RouterManager private constructor(){
             return Instance!!.get()!!
         }
     }
+
+
+    /**
+     * 初始化静态路由表到内存
+     */
+    fun init(applicationContext: Context) {
+        RouterPathManager.getInstance().init(applicationContext)
+    }
+
+
+    /**
+     * FragmentTag,可以通过此tag来区分同一个类的多个对象
+     */
+    fun fragmentTag(tag: String): RouterManager {
+        RouterParamsManager.getInstance().fragmentTag(tag)
+        return getInstance()
+    }
+
+
+
 
     /**
      * 共享元素
@@ -105,20 +122,32 @@ class RouterManager private constructor(){
      * 目标方调用回调
      */
     fun onCallBack(callBackID:String,data:Any){
-        var callBack = RouterCallBackManager.getInstance().get(callBackID)
+        val callBack = RouterCallBackManager.getInstance().get(callBackID)
         callBack?.onCallBack(data)
         //完成一次回调，清除脏数据
         clearCatchData()
     }
 
     /**
-     * 带Intent的跳转，intent中可指定启动模式，指定bundle等等
+     * 路由跳转Activity或获得Fragment实例
      */
-    fun navigation() {
-        var intent = createIntent()
-        jumpActivity(RouterParamsManager.context!!.get()!!,intent)
-        //发生一次请求，清除脏数据
-        clearCatchData()
+    fun navigation():Any? {
+        if (RouterParamsManager.action != null && RouterParamsManager.context!!.get() != null) {
+            val cls = RouterPathManager.getInstance()
+                .findClassFromRouterPath(RouterParamsManager.context!!.get()!!, RouterParamsManager.action!!)!!.newInstance()
+            if (cls is BaseActivity) {
+                val intent = createIntent()
+                jumpActivity(RouterParamsManager.context!!.get()!!, intent)
+                //发生一次请求，清除脏数据
+                clearCatchData()
+                return null
+            } else if (cls is BaseFragment) {
+                val instance = cls.getInstance()
+                instance.fragmentTag = RouterParamsManager.tag
+                return instance
+            }
+        }
+        return null
     }
 
     /**
@@ -129,16 +158,16 @@ class RouterManager private constructor(){
     }
 
     /**
-     * 调用方法
+     * 调用指定的注解方法
      */
     fun callMethod(vararg params: Any): Any? {
         if (RouterParamsManager.action == null) {
             throw Exception("please with action first!")
         }
         val clsPath: String? = RouterPathManager.getInstance()
-            .getClassPathByMethodPath(RouterParamsManager.context!!.get()!!, RouterParamsManager.action!!)
+            .findClassPathByMethodPath(RouterParamsManager.context!!.get()!!, RouterParamsManager.action!!)
         if (clsPath != null) {
-            return RouterMethodManager.getInstance().invoke(clsPath, RouterParamsManager.action, *params)
+            return RouterMethodManager.getInstance().invoke(clsPath,RouterParamsManager.tag,RouterParamsManager.action, *params)
         }
         return null
     }
@@ -152,7 +181,7 @@ class RouterManager private constructor(){
                 .makeSceneTransitionAnimation(context
                     , RouterParamsManager.view!!.get()!!
                     , RouterParamsManager.view!!.get()!!.transitionName!!)
-            ActivityCompat.startActivity(context, intent, compat.toBundle())//复制代码
+            ActivityCompat.startActivity(context, intent, compat.toBundle())
         } else {
             context.startActivity(intent)
             if (context is Activity && RouterParamsManager.enterAnim != 0 && RouterParamsManager.outerAnim != 0) {
@@ -175,7 +204,7 @@ class RouterManager private constructor(){
             RouterParamsManager.intent = Intent()
         }
 
-        var clz: Class<*>? = RouterPathManager.getInstance().getClassFromRouterPath(RouterParamsManager.context!!.get()!!, RouterParamsManager.action!!)
+        val clz: Class<*>? = RouterPathManager.getInstance().findClassFromRouterPath(RouterParamsManager.context!!.get()!!, RouterParamsManager.action!!)
         RouterParamsManager.intent?.setClass(RouterParamsManager.context!!.get()!!, clz!!)
         if (RouterParamsManager.callBackID != null) {
             RouterParamsManager.intent?.putExtra(RouterParamsManager.METHODCALLBACKID, RouterParamsManager.callBackID)
@@ -201,6 +230,7 @@ class RouterManager private constructor(){
             }
         }
     }
+
 
 
 }

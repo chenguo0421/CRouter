@@ -8,10 +8,25 @@
 			</MethodPath>
 		</CRouter>
 		<CRouter>
+			<RouterPath>TestFMActivity</RouterPath>
+			<ClassPath>cn.com.cg.testmodule1.TestFMActivity</ClassPath>
+		</CRouter>
+		<CRouter>
 			<ClassPath>cn.com.cg.testmodule1.utils.MyUtils</ClassPath>
 			<MethodPath>
 				<MethodPathItem>/MyUtils/testCallUtilsMethod</MethodPathItem>
 			</MethodPath>
+		</CRouter>
+		<CRouter>
+			<RouterPath>MyFragment</RouterPath>
+			<ClassPath>cn.com.cg.testmodule2.fragment.MyFragment</ClassPath>
+			<MethodPath>
+				<MethodPathItem>/MyFragment/changeText</MethodPathItem>
+			</MethodPath>
+		</CRouter>
+		<CRouter>
+			<RouterPath>PortalFragment</RouterPath>
+			<ClassPath>cn.com.cg.testmodule2.fragment.PortalFragment</ClassPath>
 		</CRouter>
 		<CRouter>
 			<RouterPath>Test2Activity</RouterPath>

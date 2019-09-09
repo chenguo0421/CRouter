@@ -1,8 +1,7 @@
 package cn.com.cg.router.manager.path
 
 import cn.com.cg.base.BaseActivity
-import cn.com.cg.base.CRouterBaseActivity
-import cn.com.cg.base.CRouterBaseFragment
+import cn.com.cg.base.BaseFragment
 import java.lang.ref.SoftReference
 
 /**
@@ -15,11 +14,22 @@ class RouterBeanManager{
     /**
      * Activity实例
      */
-    private var actMap:HashMap<String,SoftReference<CRouterBaseActivity>>? = null
+    private var actMap:HashMap<String,SoftReference<BaseActivity>>? = null
+
+    /**
+     * tag用于区分Activity的不同实例
+     */
+    private var actTagsMap:HashMap<String,ArrayList<String>>? = null
+
     /**
      * Fragment实例
      */
-    private var fmMap:HashMap<String,SoftReference<CRouterBaseFragment>>? = null
+    private var fmMap:HashMap<String,SoftReference<BaseFragment>>? = null
+
+    /**
+     * tag用于区分Fragment的不同实例
+     */
+    private var fmTagsMap:HashMap<String,ArrayList<String>>? = null
 
     /**
      * 其他工具类实例
@@ -27,27 +37,34 @@ class RouterBeanManager{
     private var utilMap: HashMap<String, SoftReference<Any?>>? = null
 
 
-    fun registerAct(obj: CRouterBaseActivity) {
+    fun registerAct(obj: BaseActivity) {
         actMap?.put(obj::class.qualifiedName!!,SoftReference(obj))
     }
 
-    fun registerFM(obj: CRouterBaseFragment) {
-        fmMap?.put(obj::class.qualifiedName!!,SoftReference(obj))
+    fun registerFM(obj: BaseFragment) {
+        fmMap?.put(obj::class.qualifiedName!! + obj.fragmentTag,SoftReference(obj))
+        var list = fmTagsMap?.get(obj::class.qualifiedName)
+        if (list == null) {
+            list = ArrayList()
+        }
+        obj.fragmentTag?.let { list.add(it) }
+        fmTagsMap?.put(obj::class.qualifiedName!!,list)
     }
 
-    fun unRegisterAct(obj: CRouterBaseActivity) {
+    fun unRegisterAct(obj: BaseActivity) {
         actMap?.remove(obj::class.qualifiedName!!)
     }
 
-    fun unRegisterFM(obj: CRouterBaseFragment) {
-        fmMap?.remove(obj::class.qualifiedName!!)
+    fun unRegisterFM(obj: BaseFragment) {
+        fmMap?.remove(obj::class.qualifiedName!! + obj.fragmentTag)
+        fmTagsMap?.remove(obj::class.qualifiedName!!)
     }
 
-    fun getActBean(clsPath:String):CRouterBaseActivity?{
+    fun getActBean(clsPath:String):BaseActivity?{
         return actMap!![clsPath]?.get()
     }
 
-    fun getFMBean(clsPath:String):CRouterBaseFragment?{
+    fun getFMBean(clsPath:String):BaseFragment?{
         return fmMap!![clsPath]?.get()
     }
 
@@ -58,12 +75,23 @@ class RouterBeanManager{
         return utilMap!![clzPath]?.get()
     }
 
+    fun getFragmentTagsByClassPath(clsPaht:String):ArrayList<String>?{
+        return fmTagsMap?.get(clsPaht)
+    }
+
+
     private constructor(){
         if (actMap == null) {
             actMap = HashMap()
         }
+        if (actTagsMap == null){
+            actTagsMap = HashMap()
+        }
         if (fmMap == null) {
             fmMap = HashMap()
+        }
+        if (fmTagsMap == null) {
+            fmTagsMap = HashMap()
         }
         if (utilMap == null) {
             utilMap = HashMap()

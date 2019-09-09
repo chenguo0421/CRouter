@@ -1,16 +1,12 @@
 package cn.com.cg.testmodule2
 
-import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import androidx.annotation.RequiresApi
-import androidx.core.util.ObjectsCompat
 import cn.com.cg.base.BaseActivity
-import cn.com.cg.base.CRouterBaseActivity
 import cn.com.cg.router.annotation.CRouter
 import cn.com.cg.router.manager.RouterManager
-import kotlinx.android.synthetic.main.t2_activity.*;
-import java.util.*
+import kotlinx.android.synthetic.main.t2_activity.*
 
 /**
  * Discription  {}
@@ -18,7 +14,7 @@ import java.util.*
  * Date  2019/8/27 17:05
  */
 @CRouter("Test2Activity")
-class Test2Activity : CRouterBaseActivity(){
+class Test2Activity : BaseActivity(){
 
 
     @RequiresApi(Build.VERSION_CODES.KITKAT)
