@@ -21,6 +21,8 @@ class RouterPathManager {
      */
     var methodMap: HashMap<String, String>? = null
 
+    var clsPathLists:ArrayList<String>? = null
+
     private constructor()
 
     fun init(context:Context){
@@ -30,8 +32,24 @@ class RouterPathManager {
         if (methodMap == null) {
             methodMap = HashMap()
         }
-        RouterXmlParser.parseRouterMap(context,routerMap,methodMap)
+        if (clsPathLists == null) {
+            clsPathLists = ArrayList()
+        }
+        RouterXmlParser.parseRouterMap(context,routerMap,methodMap,clsPathLists)
     }
+
+    /**
+     * 判断当前类是否是带有注解的类
+     */
+    fun isAnnotationClass(clsPath:String):Boolean{
+        for (item in clsPathLists!!){
+            if (clsPath == item){
+                return true
+            }
+        }
+        return false
+    }
+
 
     /**
      * 通过CRouter注解值查询所在类路径

@@ -4,11 +4,11 @@ import android.content.Context
 import android.util.Xml
 import cn.com.cg.router.bean.RouterBean
 import org.xmlpull.v1.XmlPullParser
-import org.xmlpull.v1.XmlPullParserException
+import java.io.IOException
 import java.io.InputStream
-import java.lang.Exception
 import java.util.HashMap
-import java.io.IOException as IOException
+import kotlin.collections.ArrayList
+import kotlin.collections.set
 
 /**
  * Discription  {}
@@ -19,8 +19,11 @@ open class RouterXmlParser{
 
     companion object{
 
-        open fun parseRouterMap(context: Context,routerMap: HashMap<String, RouterBean>?,methodMap: HashMap<String, String>?){
-            pull(context, "CRouter.xml", routerMap, methodMap)
+        open fun parseRouterMap(context: Context,routerMap: HashMap<String, RouterBean>?,methodMap: HashMap<String, String>?,clsPathLists:ArrayList<String>?){
+            routerMap?.clear()
+            methodMap?.clear()
+            clsPathLists?.clear()
+            pull(context, "CRouter.xml", routerMap, methodMap,clsPathLists)
         }
 
 
@@ -32,7 +35,7 @@ open class RouterXmlParser{
          * @param fileName
          * @return
          */
-        private fun pull(context: Context, fileName: String,map: HashMap<String, RouterBean>?,methodMap:HashMap<String, String>?){
+        private fun pull(context: Context, fileName: String,map: HashMap<String, RouterBean>?,methodMap:HashMap<String, String>?,clsPathLists:ArrayList<String>?){
             //获得一个pull解析器
             val parser = Xml.newPullParser()
             var router: RouterBean? = null
@@ -63,6 +66,7 @@ open class RouterXmlParser{
                                     val path =  parser.nextText()
                                     router!!.classPaths = path
                                     clsPath = path
+                                    clsPathLists?.add(path)
                                 } else if ("MethodPath" == tag){
                                     cMethodIds = ArrayList()
                                 } else if ("MethodPathItem" == tag){

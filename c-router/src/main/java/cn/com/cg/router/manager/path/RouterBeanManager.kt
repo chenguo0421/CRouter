@@ -38,17 +38,21 @@ class RouterBeanManager{
 
 
     fun registerAct(obj: BaseActivity) {
-        actMap?.put(obj::class.qualifiedName!!,SoftReference(obj))
+        if (RouterPathManager.getInstance().isAnnotationClass(obj::class.qualifiedName!!)){
+            actMap?.put(obj::class.qualifiedName!!,SoftReference(obj))
+        }
     }
 
     fun registerFM(obj: BaseFragment) {
-        fmMap?.put(obj::class.qualifiedName!! + obj.fragmentTag,SoftReference(obj))
-        var list = fmTagsMap?.get(obj::class.qualifiedName)
-        if (list == null) {
-            list = ArrayList()
+        if (RouterPathManager.getInstance().isAnnotationClass(obj::class.qualifiedName!!)){
+            fmMap?.put(obj::class.qualifiedName!! + obj.fragmentTag,SoftReference(obj))
+            var list = fmTagsMap?.get(obj::class.qualifiedName)
+            if (list == null) {
+                list = ArrayList()
+            }
+            obj.fragmentTag?.let { list.add(it) }
+            fmTagsMap?.put(obj::class.qualifiedName!!,list)
         }
-        obj.fragmentTag?.let { list.add(it) }
-        fmTagsMap?.put(obj::class.qualifiedName!!,list)
     }
 
     fun unRegisterAct(obj: BaseActivity) {
