@@ -68,7 +68,7 @@ class Test2Activity : BaseActivity(){
     private fun resultData() {
         var callbackData: String = "我来自第二页"
         RouterManager.getInstance()
-            .onCallBack(callBackMethodID!!,callbackData)
+            .onCallBack(callBackMethodID,callbackData)
         RouterManager.getInstance().with(this).finish()
 //        overridePendingTransition(0,0)
     }

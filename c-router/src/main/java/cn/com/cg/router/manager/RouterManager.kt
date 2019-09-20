@@ -9,6 +9,7 @@ import androidx.core.app.ActivityCompat
 import androidx.core.app.ActivityOptionsCompat
 import cn.com.cg.base.BaseActivity
 import cn.com.cg.base.BaseFragment
+import cn.com.cg.clog.CLog
 import cn.com.cg.router.manager.callback.RouterCallBackManager
 import cn.com.cg.router.manager.intf.RouterCallBack
 import cn.com.cg.router.manager.method.RouterMethodManager
@@ -121,7 +122,10 @@ class RouterManager private constructor(){
     /**
      * 目标方调用回调
      */
-    fun onCallBack(callBackID:String,data:Any){
+    fun onCallBack(callBackID:String?,data:Any){
+        if (callBackID == null) {
+            return
+        }
         val callBack = RouterCallBackManager.getInstance().get(callBackID)
         callBack?.onCallBack(data)
         //完成一次回调，清除脏数据
@@ -132,6 +136,7 @@ class RouterManager private constructor(){
      * 路由跳转Activity或获得Fragment实例
      */
     fun navigation():Any? {
+        CLog.d("RouterManager navigation with action ${RouterParamsManager.action}")
         if (RouterParamsManager.action != null && RouterParamsManager.context!!.get() != null) {
             val cls = RouterPathManager.getInstance()
                 .findClassFromRouterPath(RouterParamsManager.context!!.get()!!, RouterParamsManager.action!!)!!.newInstance()
@@ -164,6 +169,7 @@ class RouterManager private constructor(){
         if (RouterParamsManager.action == null) {
             throw Exception("please with action first!")
         }
+        CLog.d("RouterManager callMethod with action ${RouterParamsManager.action}")
         val clsPath: String? = RouterPathManager.getInstance()
             .findClassPathByMethodPath(RouterParamsManager.context!!.get()!!, RouterParamsManager.action!!)
         if (clsPath != null) {
@@ -182,11 +188,13 @@ class RouterManager private constructor(){
                     , RouterParamsManager.view!!.get()!!
                     , RouterParamsManager.view!!.get()!!.transitionName!!)
             ActivityCompat.startActivity(context, intent, compat.toBundle())
+            CLog.d("RouterManager jumpActivity with shareElements")
         } else {
             context.startActivity(intent)
             if (context is Activity && RouterParamsManager.enterAnim != 0 && RouterParamsManager.outerAnim != 0) {
                 context.overridePendingTransition(RouterParamsManager.enterAnim!!, RouterParamsManager.outerAnim!!)
             }
+            CLog.d("RouterManager jumpActivity ordinary")
         }
     }
 
@@ -221,11 +229,14 @@ class RouterManager private constructor(){
             if (RouterParamsManager.enterAnim != 0 && RouterParamsManager.outerAnim != 0) {
                 (RouterParamsManager.context?.get() as Activity).finish()
                 (RouterParamsManager.context?.get() as Activity).overridePendingTransition(RouterParamsManager.enterAnim!!, RouterParamsManager.outerAnim!!)
+                CLog.d("RouterManager finish with anim")
             }else{
                 if(Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP){
                     (RouterParamsManager.context?.get() as Activity).finishAfterTransition()
+                    CLog.d("RouterManager finish with ShareElements")
                 }else{
                     (RouterParamsManager.context?.get() as Activity).finish()
+                    CLog.d("RouterManager finish with ordinary")
                 }
             }
         }

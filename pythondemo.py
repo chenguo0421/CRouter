@@ -103,7 +103,7 @@ def regLine(f):
                     print("匹配到@CRouter")
                     r = re.findall('@CRouter\((.*?)\)',line.lstrip())
                     for each in r:
-                        if re.match('=',each):
+                        if re.search('=',each):
                             _r_list.append(each.split("=", 1)[1])
                         else:
                             _r_list.append(each)
@@ -114,7 +114,7 @@ def regLine(f):
                     print("匹配到@CMethod")
                     m = re.findall('@CMethod\((.*?)\)',line.lstrip())
                     for each in m:
-                        if re.match('=',each):
+                        if re.search('=',each):
                             _m_list.append(each.split("=", 1)[1])
                         else:
                             _m_list.append(each)
@@ -178,7 +178,7 @@ def write(xmlPath,list):
     fp.close()
 
 
-# 本方法主要去除routerPath的双引号
+# 本方法主要去除routerPath的双引号和空格
 def rebuild_annotationBean_list(list):
     new_list = []
     for item in list:
@@ -194,14 +194,14 @@ def rebuild_annotationBean_list(list):
             routerPath.strip()
             routerPath = re.sub("\"","",routerPath)
             routerPath = re.sub("\'","",routerPath)
-            _routerPathList.append(routerPath)
-        bean._clsPath(path)
+            _routerPathList.append(routerPath.lstrip())
+        bean._clsPath(path.lstrip())
         bean._clsAnnotation(_routerPathList)
         for methodPath in item.methodAnnotation:
             methodPath.strip()
             methodPath = re.sub("\"","",methodPath)
             methodPath = re.sub("\'","",methodPath)
-            _methodPathList.append(methodPath)
+            _methodPathList.append(methodPath.lstrip())
         bean._methodAnnotation(_methodPathList)
         new_list.append(bean)
     return new_list

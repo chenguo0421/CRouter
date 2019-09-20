@@ -16,7 +16,7 @@ import kotlinx.android.synthetic.main.t1_activity.*
  * Date  2019/8/27 17:04
  */
 
-@CRouter("Test1Activity")
+@CRouter(path = "Test1Activity")
 class Test1Activity : BaseActivity(), View.OnClickListener, RouterCallBack {
 
     /**
@@ -33,6 +33,9 @@ class Test1Activity : BaseActivity(), View.OnClickListener, RouterCallBack {
             R.id.btn2 -> gotoFMActivity()
         }
     }
+
+
+
 
     private fun gotoFMActivity() {
         RouterManager.getInstance()
@@ -59,6 +62,7 @@ class Test1Activity : BaseActivity(), View.OnClickListener, RouterCallBack {
     }
 
 
+
     /**
      * 通过注解反射回调
      */
@@ -74,6 +78,10 @@ class Test1Activity : BaseActivity(), View.OnClickListener, RouterCallBack {
         setContentView(R.layout.t1_activity)
         btn1.setOnClickListener(this)
         btn2.setOnClickListener(this)
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
     }
 }
 

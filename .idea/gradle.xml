@@ -9,9 +9,8 @@
           <set>
             <option value="$PROJECT_DIR$" />
             <option value="$PROJECT_DIR$/app" />
+            <option value="$PROJECT_DIR$/c-log" />
             <option value="$PROJECT_DIR$/c-router" />
-            <option value="$PROJECT_DIR$/lib_annotation" />
-            <option value="$PROJECT_DIR$/lib_compiler" />
             <option value="$PROJECT_DIR$/testmodule1" />
             <option value="$PROJECT_DIR$/testmodule2" />
           </set>

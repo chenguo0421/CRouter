@@ -34,4 +34,6 @@ ext{
     minSdkVersion = 14
     targetSdkVersion = 29
 
+    appcompat = '1.1.0'
+    supportV7Version = '29.0.1'
 }

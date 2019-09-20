@@ -1,1 +1,1 @@
-include ':app', ':c-router', ':testmodule1', ':testmodule2', ':lib_annotation', ':lib_compiler'
+include ':app', ':c-router', ':testmodule1', ':testmodule2', ':c-log'

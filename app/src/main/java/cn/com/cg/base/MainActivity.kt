@@ -1,12 +1,11 @@
 package cn.com.cg.base
 
 import android.os.Bundle
-import com.google.android.material.snackbar.Snackbar
-import androidx.appcompat.app.AppCompatActivity;
 import android.view.Menu
 import android.view.MenuItem
+import androidx.appcompat.app.AppCompatActivity
 import cn.com.cg.router.manager.RouterManager
-
+import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity() {
@@ -22,6 +21,10 @@ class MainActivity : AppCompatActivity() {
         }
 
         RouterManager.getInstance().with(this).action("Test1Activity").navigation()
+//        val intent = Intent(this,TestLiftActivity::class.java)
+//        intent.addFlags(Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT)
+//        startActivity(intent)
+
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -38,5 +41,9 @@ class MainActivity : AppCompatActivity() {
             R.id.action_settings -> true
             else -> super.onOptionsItemSelected(item)
         }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
     }
 }
