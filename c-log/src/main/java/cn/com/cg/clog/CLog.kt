@@ -439,8 +439,13 @@ public class CLog(context: Context) : FrameLayout(context),Thread.UncaughtExcept
             mSrcView = decorView.getChildAt(0)
             decorView.removeView(mSrcView)
             instance?.addView(mSrcView, 0)
-            instance?.addView(mLogContainer, 1)
-            decorView.addView(instance!!)
+            if (mLogContainer.parent == null) {
+                instance?.addView(mLogContainer, 1)
+            }
+            if (instance?.parent == null) {
+                decorView.addView(instance!!)
+            }
+
         }
     }
 
