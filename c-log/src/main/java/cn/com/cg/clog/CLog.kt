@@ -20,6 +20,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import cn.com.cg.clog.adapter.CLogAdapter
 import cn.com.cg.clog.annotation.IgnoreCLogView
 import cn.com.cg.clog.utils.CheckLeak
+import cn.com.cg.clog.utils.LogType
 import cn.com.cg.clog.view.CLogRecyclerView
 import java.text.SimpleDateFormat
 import java.util.*
@@ -207,6 +208,10 @@ public class CLog(context: Context) : FrameLayout(context),Thread.UncaughtExcept
             }
         }
         mLogAdapter.notifyDataSetChanged()
+
+        if (isAutoScroll){
+            mRVLog.smoothScrollToPosition(mLogAdapter.itemCount - 1)
+        }
     }
 
 
@@ -296,6 +301,8 @@ public class CLog(context: Context) : FrameLayout(context),Thread.UncaughtExcept
         mLogContainer.addView(switchLog)
 
 
+
+
         //检测内存泄漏相关
         mLeakCheck = CheckLeak()
         val handler = Handler(Looper.getMainLooper())
@@ -312,7 +319,7 @@ public class CLog(context: Context) : FrameLayout(context),Thread.UncaughtExcept
         if (action == MotionEvent.ACTION_DOWN) {
             val l = SystemClock.uptimeMillis()
             val dis = l - timestamp
-            LogSwitch(dis)
+            logSwitch(dis)
             timestamp = SystemClock.uptimeMillis()
         }
         return super.dispatchTouchEvent(ev)
@@ -320,7 +327,7 @@ public class CLog(context: Context) : FrameLayout(context),Thread.UncaughtExcept
 
 
 
-    private fun LogSwitch(dis: Long) {
+    private fun logSwitch(dis: Long) {
         if (dis <= 500) {
             mShortClick++
             if (mShortClick > SHORT_CLICK) clearClick()
@@ -465,6 +472,8 @@ public class CLog(context: Context) : FrameLayout(context),Thread.UncaughtExcept
         private var instance: CLog? = null
         private const val logScout:Int = 8
         private const val debuggable = true //正式环境(false)不打印日志，也不能唤起app的debug界面
+        private var isAutoScroll = false
+        private var logType = LogType.d
 
         open fun init(app:Application){
             if (debuggable && instance == null) {
@@ -502,27 +511,27 @@ public class CLog(context: Context) : FrameLayout(context),Thread.UncaughtExcept
         }
 
         private fun v(tag: String, msg: String) {
-            if (instance != null) instance?.print(Log.VERBOSE, tag, msg)
+            if (instance != null && logType == LogType.v) instance?.print(Log.VERBOSE, tag, msg)
         }
 
         private fun d(tag: String, msg: String) {
-            if (instance != null) instance?.print(Log.DEBUG, tag, msg)
+            if (instance != null && logType == LogType.d) instance?.print(Log.DEBUG, tag, msg)
         }
 
         private fun i(tag: String, msg: String) {
-            if (instance != null) instance?.print(Log.INFO, tag, msg)
+            if (instance != null && logType == LogType.i) instance?.print(Log.INFO, tag, msg)
         }
 
         private fun w(tag: String, msg: String) {
-            if (instance != null) instance?.print(Log.WARN, tag, msg)
+            if (instance != null && logType == LogType.w) instance?.print(Log.WARN, tag, msg)
         }
 
         private fun e(tag: String, msg: String) {
-            if (instance != null) instance?.print(Log.ERROR, tag, msg)
+            if (instance != null && logType == LogType.e) instance?.print(Log.ERROR, tag, msg)
         }
 
         private fun s(tag: String, msg: String) {
-            if (instance != null) instance?.print(logScout, tag, msg)
+            if (instance != null && logType == LogType.s) instance?.print(logScout, tag, msg)
         }
 
 
