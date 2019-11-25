@@ -37,12 +37,10 @@ dependencies {
     androidTestImplementation 'androidx.test:runner:1.2.0'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
 
-    implementation project(':c-router')
+    api project(':c-common')
+
     implementation project(':testmodule1')
     implementation project(':testmodule2')
-    implementation project(':c-log')
-
-
 
 }
 

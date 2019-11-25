@@ -1,18 +1,43 @@
 package cn.com.cg.base
 
 import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.View
-import androidx.fragment.app.Fragment
+import android.view.ViewGroup
+import cn.com.cg.mvp.base.intf.BaseView
 import cn.com.cg.router.manager.path.RouterBeanManager
+import com.trello.rxlifecycle2.components.support.RxFragment
 
 /**
  * Discription  {}
  * author  chenguo7
  * Date  2019/8/27 20:41
  */
-open abstract class BaseFragment : Fragment(){
+open abstract class BaseFragment<V: BaseView,P:BasePresenter<BaseView>> : RxFragment(){
 
     open var fragmentTag:String? = ""
+    private var mView: V? = null
+    private var mPresenter: P? = null
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        if (mPresenter == null) {
+            mPresenter = createPresenter()
+        }
+
+        if (mView == null) {
+            mView = createView()
+        }
+
+        mPresenter?.attachView(mView!!)
+    }
+
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        val view = inflater.inflate(getLayoutId(), container, false)
+        initView(view)
+        return view
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -20,11 +45,21 @@ open abstract class BaseFragment : Fragment(){
     }
 
 
-    abstract fun getInstance():BaseFragment
+    abstract fun createPresenter(): P
+
+    abstract fun createView(): V
+
+    protected abstract fun initView(view: View)
+
+    protected abstract fun getLayoutId(): Int
+
+
+    abstract fun getInstance():BaseFragment<V,P>
 
 
     override fun onDestroy() {
         RouterBeanManager.getInstance().unRegisterFM(this)
+        mPresenter?.detachView()
         super.onDestroy()
     }
 }

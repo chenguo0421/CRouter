@@ -36,4 +36,10 @@ ext{
 
     appcompat = '1.1.0'
     supportV7Version = '29.0.1'
+
+    rxjavaVersion = '2.1.8'
+    rxandroidVersion = '2.0.1'
+    okhttpVersion = '3.9.1'
+    okhttploggingVersion = '3.8.1'
+    retrofitVersion = '2.3.0'
 }
