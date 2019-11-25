@@ -14,7 +14,7 @@ class RouterBeanManager{
     /**
      * Activity实例
      */
-    private var actMap:HashMap<String,SoftReference<BaseActivity>>? = null
+    private var actMap:HashMap<String,SoftReference<BaseActivity<*,*>>>? = null
 
     /**
      * tag用于区分Activity的不同实例
@@ -24,7 +24,7 @@ class RouterBeanManager{
     /**
      * Fragment实例
      */
-    private var fmMap:HashMap<String,SoftReference<BaseFragment>>? = null
+    private var fmMap:HashMap<String,SoftReference<BaseFragment<*,*>>>? = null
 
     /**
      * tag用于区分Fragment的不同实例
@@ -37,13 +37,13 @@ class RouterBeanManager{
     private var utilMap: HashMap<String, SoftReference<Any?>>? = null
 
 
-    fun registerAct(obj: BaseActivity) {
+    fun registerAct(obj: BaseActivity<*,*>) {
         if (RouterPathManager.getInstance().isAnnotationClass(obj::class.qualifiedName!!)){
             actMap?.put(obj::class.qualifiedName!!,SoftReference(obj))
         }
     }
 
-    fun registerFM(obj: BaseFragment) {
+    fun registerFM(obj: BaseFragment<*,*>) {
         if (RouterPathManager.getInstance().isAnnotationClass(obj::class.qualifiedName!!)){
             fmMap?.put(obj::class.qualifiedName!! + obj.fragmentTag,SoftReference(obj))
             var list = fmTagsMap?.get(obj::class.qualifiedName)
@@ -55,20 +55,20 @@ class RouterBeanManager{
         }
     }
 
-    fun unRegisterAct(obj: BaseActivity) {
+    fun unRegisterAct(obj: BaseActivity<*,*>) {
         actMap?.remove(obj::class.qualifiedName!!)
     }
 
-    fun unRegisterFM(obj: BaseFragment) {
+    fun unRegisterFM(obj: BaseFragment<*,*>) {
         fmMap?.remove(obj::class.qualifiedName!! + obj.fragmentTag)
         fmTagsMap?.remove(obj::class.qualifiedName!!)
     }
 
-    fun getActBean(clsPath:String):BaseActivity?{
+    fun getActBean(clsPath:String):BaseActivity<*,*>?{
         return actMap!![clsPath]?.get()
     }
 
-    fun getFMBean(clsPath:String):BaseFragment?{
+    fun getFMBean(clsPath:String):BaseFragment<*,*>?{
         return fmMap!![clsPath]?.get()
     }
 

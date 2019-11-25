@@ -1,8 +1,8 @@
-package cn.com.cg.base
+package cn.com.cg.mvp.base
 
 import android.content.Context
-import cn.com.cg.mvp.observelistener.ObserveResponseListener
-import cn.com.cg.mvp.observelistener.ProgressObserver
+import cn.com.cg.cnet.retrofit.observelistener.ObserveResponseListener
+import cn.com.cg.cnet.retrofit.observelistener.ProgressObserver
 
 import io.reactivex.Observable
 import io.reactivex.ObservableTransformer
