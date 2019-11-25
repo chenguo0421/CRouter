@@ -475,7 +475,7 @@ public class CLog(context: Context) : FrameLayout(context),Thread.UncaughtExcept
         private var isAutoScroll = false
         private var logType = LogType.d
 
-        open fun init(app:Application){
+        public fun init(app:Application){
             if (debuggable && instance == null) {
                 synchronized(CLog::class.java){
                     if (instance == null) {

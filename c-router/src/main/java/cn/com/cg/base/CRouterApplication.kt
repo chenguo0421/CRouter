@@ -2,6 +2,7 @@ package cn.com.cg.base
 
 import android.app.Application
 import cn.com.cg.router.manager.RouterManager
+import cn.com.cg.router.manager.interceptor.DefualtRouterInterceptor
 
 /**
  * Discription  {}
@@ -12,7 +13,7 @@ open class CRouterApplication : Application() {
 
     override fun onCreate() {
         super.onCreate()
-        RouterManager.getInstance().init(this)
+        RouterManager.getInstance().setInterceptor(DefualtRouterInterceptor()).init(this)
     }
 
 }

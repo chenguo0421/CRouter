@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.Intent
 import android.view.View
 import cn.com.cg.router.manager.callback.RouterCallBackManager
+import cn.com.cg.router.manager.intf.CRouterInterceptor
 import cn.com.cg.router.manager.intf.RouterCallBack
 import java.lang.ref.SoftReference
 
@@ -14,71 +15,115 @@ import java.lang.ref.SoftReference
  */
 open class RouterParamsManager {
 
-    companion object{
-        var METHODCALLBACKID:String = "METHOD_CALLBACKID"
-        @Volatile var intent: Intent? = null
-        @Volatile var action: String? = null
-        @Volatile var callBackID: String? = null
-        @Volatile var clsName: String? = null
-        @Volatile var tag: String? = null
-        @Volatile var enterAnim: Int? = 0
-        @Volatile var outerAnim: Int? = 0
-        @Volatile var view: SoftReference<View>? = null
-        @Volatile var context: SoftReference<Context>? = null
+    private var intent: Intent? = null
+    private var action: String? = null
+    private var callBackID: String? = null
+    private var clsName: String? = null
+    private var tag: String? = null
+    private var animArr: IntArray? = null
+    private var view: SoftReference<View>? = null
+    private var context: SoftReference<Context>? = null
+    private var interceptor: CRouterInterceptor? = null
 
-        private @Volatile var Instance: SoftReference<RouterParamsManager>? = null
+
+
+    companion object{
+
+        var METHODCALLBACKID:String = "METHOD_CALLBACKID"
+
+        private var instance: RouterParamsManager? = null
+
         fun getInstance(): RouterParamsManager{
-            if (Instance == null) {
+            if (instance == null) {
                 synchronized(this) {
-                    if (Instance == null) {
-                        Instance = SoftReference(RouterParamsManager())
+                    if (instance == null) {
+                        instance = RouterParamsManager()
                     }
                 }
             }
-            return Instance!!.get()!!
+            return instance!!
         }
     }
 
-    fun fragmentTag(tag:String){
-        RouterParamsManager.tag = tag
+
+    fun setFragmentTag(tag:String){
+        getInstance().tag = tag
     }
 
 
-    fun sharedElement(view: View) {
-        RouterParamsManager.view = SoftReference(view)
+    fun getFragmentTag():String?{
+        return getInstance().tag
     }
 
-    fun anim(enterAnim: Int, outerAnim: Int) {
-        RouterParamsManager.enterAnim = enterAnim
-        RouterParamsManager.outerAnim = outerAnim
+
+    fun setSharedElement(view: View) {
+        getInstance().view = SoftReference(view)
     }
 
-    fun with(context: Context) {
-        RouterParamsManager.context = SoftReference(context)
+    fun getSharedElement():View?{
+        return getInstance().view?.get()
     }
 
-    fun intent(intent: Intent) {
-        RouterParamsManager.intent = intent
+    fun setAnim(enterAnim: Int, outerAnim: Int) {
+        getInstance().animArr = IntArray(2)
+        getInstance().animArr?.set(0, enterAnim)
+        getInstance().animArr?.set(1, outerAnim)
     }
 
-    fun action(action: String) {
-        RouterParamsManager.action = action
+    fun getAnim():IntArray? {
+        return getInstance().animArr
+    }
+
+    fun setContext(context: Context) {
+        getInstance().context = SoftReference(context)
+    }
+
+    fun getContext():Context? {
+        return getInstance().context?.get()
+    }
+
+    fun setIntent(intent: Intent) {
+        getInstance().intent = intent
+    }
+
+    fun getIntent():Intent?{
+        return getInstance().intent
+    }
+
+    fun setAction(action: String) {
+        getInstance().action = action
+    }
+
+    fun getAction():String?{
+        return getInstance().action
     }
 
     fun setCallBack(callBack: RouterCallBack) {
-        RouterParamsManager.callBackID = RouterCallBackManager.getInstance().put(callBack)
+        getInstance().callBackID = RouterCallBackManager.getInstance().put(callBack)
+    }
+
+    fun getCallBack():String?{
+        return getInstance().callBackID
+    }
+
+    fun setInterceptor(interceptor: CRouterInterceptor) {
+        getInstance().interceptor = interceptor
+    }
+
+    fun getInterceptor():CRouterInterceptor?{
+        return getInstance().interceptor
     }
 
     fun clearCatchData() {
-        RouterParamsManager.context = null
-        RouterParamsManager.action = null
-        RouterParamsManager.intent = null
-        RouterParamsManager.callBackID = null
-        RouterParamsManager.clsName = null
-        RouterParamsManager.enterAnim = 0
-        RouterParamsManager.outerAnim = 0
-        RouterParamsManager.view = null
-        RouterParamsManager.tag = null
+        getInstance().context = null
+        getInstance().action = null
+        getInstance().intent = null
+        getInstance().callBackID = null
+        getInstance().clsName = null
+        getInstance().animArr = null
+        getInstance().view = null
+        getInstance().tag = null
+//        RouterParamsManager.interceptor = null  //脏数据清除，拦截器不清除，可以覆盖拦截器
     }
 
 }

@@ -11,6 +11,7 @@ import cn.com.cg.base.BaseActivity
 import cn.com.cg.base.BaseFragment
 import cn.com.cg.clog.CLog
 import cn.com.cg.router.manager.callback.RouterCallBackManager
+import cn.com.cg.router.manager.intf.CRouterInterceptor
 import cn.com.cg.router.manager.intf.RouterCallBack
 import cn.com.cg.router.manager.method.RouterMethodManager
 import cn.com.cg.router.manager.params.RouterParamsManager
@@ -30,16 +31,16 @@ class RouterManager private constructor(){
      */
     companion object {
 
-        private @Volatile var Instance: SoftReference<RouterManager>? = null
+        private @Volatile var instance: SoftReference<RouterManager>? = null
         fun getInstance(): RouterManager{
-            if (Instance == null) {
+            if (instance == null) {
                 synchronized(this) {
-                    if (Instance == null) {
-                        Instance = SoftReference(RouterManager())
+                    if (instance == null) {
+                        instance = SoftReference(RouterManager())
                     }
                 }
             }
-            return Instance!!.get()!!
+            return instance!!.get()!!
         }
     }
 
@@ -56,7 +57,7 @@ class RouterManager private constructor(){
      * FragmentTag,可以通过此tag来区分同一个类的多个对象
      */
     fun fragmentTag(tag: String): RouterManager {
-        RouterParamsManager.getInstance().fragmentTag(tag)
+        RouterParamsManager.getInstance().setFragmentTag(tag)
         return getInstance()
     }
 
@@ -67,7 +68,7 @@ class RouterManager private constructor(){
      * 共享元素
      */
     fun sharedElement(view:View): RouterManager{
-        RouterParamsManager.getInstance().sharedElement(view)
+        RouterParamsManager.getInstance().setSharedElement(view)
         return getInstance()
     }
 
@@ -76,7 +77,7 @@ class RouterManager private constructor(){
      * 设置页面切换动画
      */
     fun anim(enterAnim:Int,outerAnim:Int): RouterManager{
-        RouterParamsManager.getInstance().anim(enterAnim,outerAnim)
+        RouterParamsManager.getInstance().setAnim(enterAnim,outerAnim)
         return getInstance()
     }
 
@@ -85,7 +86,7 @@ class RouterManager private constructor(){
      * 配置Context
      */
     fun with(context: Context): RouterManager {
-        RouterParamsManager.getInstance().with(context)
+        RouterParamsManager.getInstance().setContext(context)
         return getInstance()
 
     }
@@ -95,7 +96,7 @@ class RouterManager private constructor(){
      * 自定义Intent，启动方式由使用者去设置
      */
     fun intent(intent:Intent): RouterManager{
-        RouterParamsManager.getInstance().intent(intent)
+        RouterParamsManager.getInstance().setIntent(intent)
         return getInstance()
     }
 
@@ -104,7 +105,7 @@ class RouterManager private constructor(){
      * 配置路由
      */
     fun action(action: String): RouterManager {
-        RouterParamsManager.getInstance().action(action)
+        RouterParamsManager.getInstance().setAction(action)
         return getInstance()
     }
 
@@ -115,6 +116,15 @@ class RouterManager private constructor(){
      */
     fun setCallBack(callBack:RouterCallBack): RouterManager {
         RouterParamsManager.getInstance().setCallBack(callBack)
+        return getInstance()
+    }
+
+
+    /**
+     * 设置拦截器
+     */
+    fun setInterceptor(interceptor: CRouterInterceptor):RouterManager{
+        RouterParamsManager.getInstance().setInterceptor(interceptor)
         return getInstance()
     }
 
@@ -136,19 +146,23 @@ class RouterManager private constructor(){
      * 路由跳转Activity或获得Fragment实例
      */
     fun navigation():Any? {
-        CLog.d("RouterManager navigation with action ${RouterParamsManager.action}")
-        if (RouterParamsManager.action != null && RouterParamsManager.context!!.get() != null) {
+        CLog.d("RouterManager navigation with action ${RouterParamsManager.getInstance().getAction()}")
+        if (RouterParamsManager.getInstance().getInterceptor() != null) {//有拦截器的话
+            RouterParamsManager.getInstance().getInterceptor()?.onInterceptor(RouterParamsManager.getInstance())
+        }
+
+        if (RouterParamsManager.getInstance().getAction() != null && RouterParamsManager.getInstance().getContext() != null) {
             val cls = RouterPathManager.getInstance()
-                .findClassFromRouterPath(RouterParamsManager.context!!.get()!!, RouterParamsManager.action!!)!!.newInstance()
+                .findClassFromRouterPath(RouterParamsManager.getInstance().getContext()!!, RouterParamsManager.getInstance().getAction()!!)!!.newInstance()
             if (cls is BaseActivity) {
                 val intent = createIntent()
-                jumpActivity(RouterParamsManager.context!!.get()!!, intent)
+                jumpActivity(RouterParamsManager.getInstance().getContext()!!, intent)
                 //发生一次请求，清除脏数据
                 clearCatchData()
                 return null
             } else if (cls is BaseFragment) {
                 val instance = cls.getInstance()
-                instance.fragmentTag = RouterParamsManager.tag
+                instance.fragmentTag = RouterParamsManager.getInstance().getFragmentTag()
                 return instance
             }
         }
@@ -166,14 +180,14 @@ class RouterManager private constructor(){
      * 调用指定的注解方法
      */
     fun callMethod(vararg params: Any): Any? {
-        if (RouterParamsManager.action == null) {
+        if (RouterParamsManager.getInstance().getAction() == null) {
             throw Exception("please with action first!")
         }
-        CLog.d("RouterManager callMethod with action ${RouterParamsManager.action}")
+        CLog.d("RouterManager callMethod with action ${RouterParamsManager.getInstance().getAction()}")
         val clsPath: String? = RouterPathManager.getInstance()
-            .findClassPathByMethodPath(RouterParamsManager.context!!.get()!!, RouterParamsManager.action!!)
+            .findClassPathByMethodPath(RouterParamsManager.getInstance().getContext()!!, RouterParamsManager.getInstance().getAction()!!)
         if (clsPath != null) {
-            return RouterMethodManager.getInstance().invoke(clsPath,RouterParamsManager.tag,RouterParamsManager.action, *params)
+            return RouterMethodManager.getInstance().invoke(clsPath,RouterParamsManager.getInstance().getFragmentTag(),RouterParamsManager.getInstance().getAction(), *params)
         }
         return null
     }
@@ -182,17 +196,24 @@ class RouterManager private constructor(){
      * 页面切换
      */
     private fun jumpActivity(context: Context, intent: Intent) {
-        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP && context is Activity && RouterParamsManager.view?.get() != null) {
+        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP && context is Activity && RouterParamsManager.getInstance().getSharedElement() != null) {
             val compat = ActivityOptionsCompat
                 .makeSceneTransitionAnimation(context
-                    , RouterParamsManager.view!!.get()!!
-                    , RouterParamsManager.view!!.get()!!.transitionName!!)
+                    , RouterParamsManager.getInstance().getSharedElement()!!
+                    , RouterParamsManager.getInstance().getSharedElement()!!.transitionName!!)
             ActivityCompat.startActivity(context, intent, compat.toBundle())
             CLog.d("RouterManager jumpActivity with shareElements")
         } else {
             context.startActivity(intent)
-            if (context is Activity && RouterParamsManager.enterAnim != 0 && RouterParamsManager.outerAnim != 0) {
-                context.overridePendingTransition(RouterParamsManager.enterAnim!!, RouterParamsManager.outerAnim!!)
+            if (context is Activity && RouterParamsManager.getInstance().getAnim()?.size == 2) {
+                RouterParamsManager.getInstance().getAnim()?.get(1)?.let {
+                    RouterParamsManager.getInstance().getAnim()?.get(0)?.let { it1 ->
+                        context.overridePendingTransition(
+                            it1,
+                            it
+                        )
+                    }
+                }
             }
             CLog.d("RouterManager jumpActivity ordinary")
         }
@@ -202,40 +223,47 @@ class RouterManager private constructor(){
      * 构建构建Intent
      */
     private fun createIntent(): Intent {
-        if (RouterParamsManager.context == null){
+        if (RouterParamsManager.getInstance().getContext() == null){
             throw Exception("please with context first!")
         }
-        if (RouterParamsManager.action == null){
+        if (RouterParamsManager.getInstance().getAction() == null){
             throw Exception("please with action first!")
         }
-        if (RouterParamsManager.intent == null){
-            RouterParamsManager.intent = Intent()
+        if (RouterParamsManager.getInstance().getIntent() == null){
+            RouterParamsManager.getInstance().setIntent(Intent())
         }
 
-        val clz: Class<*>? = RouterPathManager.getInstance().findClassFromRouterPath(RouterParamsManager.context!!.get()!!, RouterParamsManager.action!!)
-        RouterParamsManager.intent?.setClass(RouterParamsManager.context!!.get()!!, clz!!)
-        if (RouterParamsManager.callBackID != null) {
-            RouterParamsManager.intent?.putExtra(RouterParamsManager.METHODCALLBACKID, RouterParamsManager.callBackID)
+        val clz: Class<*>? = RouterPathManager.getInstance().findClassFromRouterPath(RouterParamsManager.getInstance().getContext()!!, RouterParamsManager.getInstance().getAction()!!)
+        RouterParamsManager.getInstance().getIntent()?.setClass(RouterParamsManager.getInstance().getContext()!!, clz!!)
+        if (RouterParamsManager.getInstance().getCallBack() != null) {
+            RouterParamsManager.getInstance().getIntent()?.putExtra(RouterParamsManager.METHODCALLBACKID, RouterParamsManager.getInstance().getCallBack())
         }
-        return RouterParamsManager.intent!!
+        return RouterParamsManager.getInstance().getIntent()!!
     }
 
 
     fun finish() {
-        if (RouterParamsManager.context == null){
+        if (RouterParamsManager.getInstance().getContext() == null){
             throw Exception("please with context first!")
         }
-        if (RouterParamsManager.context?.get() is Activity){
-            if (RouterParamsManager.enterAnim != 0 && RouterParamsManager.outerAnim != 0) {
-                (RouterParamsManager.context?.get() as Activity).finish()
-                (RouterParamsManager.context?.get() as Activity).overridePendingTransition(RouterParamsManager.enterAnim!!, RouterParamsManager.outerAnim!!)
+        if (RouterParamsManager.getInstance().getContext() is Activity){
+            if (RouterParamsManager.getInstance().getAnim()?.size == 2) {
+                (RouterParamsManager.getInstance().getContext() as Activity).finish()
+                RouterParamsManager.getInstance().getAnim()?.get(1)?.let {
+                    RouterParamsManager.getInstance().getAnim()?.get(0)?.let { it1 ->
+                        (RouterParamsManager.getInstance().getContext() as Activity).overridePendingTransition(
+                            it1,
+                            it
+                        )
+                    }
+                }
                 CLog.d("RouterManager finish with anim")
             }else{
                 if(Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP){
-                    (RouterParamsManager.context?.get() as Activity).finishAfterTransition()
+                    (RouterParamsManager.getInstance().getContext() as Activity).finishAfterTransition()
                     CLog.d("RouterManager finish with ShareElements")
                 }else{
-                    (RouterParamsManager.context?.get() as Activity).finish()
+                    (RouterParamsManager.getInstance().getContext() as Activity).finish()
                     CLog.d("RouterManager finish with ordinary")
                 }
             }
