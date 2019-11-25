@@ -1,4 +1,4 @@
-package cn.com.cg.base
+package cn.com.cg.mvp.base
 
 /**
  * Discription  {}

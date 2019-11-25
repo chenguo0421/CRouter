@@ -18,11 +18,11 @@ class RouterMethodManager {
 
     fun invoke(clzPath: String?,tag:String?, action: String?,vararg params:Any): Any? {
         val instance = Class.forName(clzPath!!).newInstance()
-        if(instance is BaseActivity){
+        if(instance is BaseActivity<*,*>){
             if (getInvokeActivityMaps(clzPath).size > 0){
                 return invokeMethod(getInvokeActivityMaps(clzPath), RouterBeanManager.getInstance().getActBean(clzPath!!), action, params)
             }
-        }else if(instance is BaseFragment){
+        }else if(instance is BaseFragment<*,*>){
             val realClsPath = RouterPathManager.getInstance().findRealPathByTag(clzPath,tag)
             val bean = RouterBeanManager.getInstance().getFMBean(realClsPath!!)
             if (bean != null) {

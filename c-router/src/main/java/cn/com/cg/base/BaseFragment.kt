@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import cn.com.cg.mvp.base.BasePresenter
 import cn.com.cg.mvp.base.intf.BaseView
 import cn.com.cg.router.manager.path.RouterBeanManager
 import com.trello.rxlifecycle2.components.support.RxFragment
@@ -13,7 +14,7 @@ import com.trello.rxlifecycle2.components.support.RxFragment
  * author  chenguo7
  * Date  2019/8/27 20:41
  */
-open abstract class BaseFragment<V: BaseView,P:BasePresenter<BaseView>> : RxFragment(){
+open abstract class BaseFragment<V: BaseView,P: BasePresenter<BaseView>> : RxFragment(){
 
     open var fragmentTag:String? = ""
     private var mView: V? = null

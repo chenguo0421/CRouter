@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentTransaction
+import cn.com.cg.mvp.base.BasePresenter
 import cn.com.cg.mvp.base.intf.BaseView
 import cn.com.cg.router.manager.params.RouterParamsManager
 import cn.com.cg.router.manager.path.RouterBeanManager
@@ -15,7 +16,7 @@ import com.trello.rxlifecycle2.components.support.RxAppCompatActivity
  * author  chenguo7
  * Date  2019/8/27 20:22
  */
-open abstract class BaseActivity<V:BaseView,P:BasePresenter<BaseView>> : RxAppCompatActivity() {
+open abstract class BaseActivity<V:BaseView,P: BasePresenter<BaseView>> : RxAppCompatActivity() {
 
     open var callBackMethodID: String? = null
     private var mView: V? = null

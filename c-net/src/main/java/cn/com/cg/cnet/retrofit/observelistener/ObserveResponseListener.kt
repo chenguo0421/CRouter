@@ -1,4 +1,4 @@
-package cn.com.cg.mvp.observelistener
+package cn.com.cg.cnet.retrofit.observelistener
 
 import cn.com.cg.cnet.retrofit.exception.ExceptionHandler
 
