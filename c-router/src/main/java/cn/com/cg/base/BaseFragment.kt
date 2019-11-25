@@ -35,7 +35,7 @@ open abstract class BaseFragment<V: BaseView,P: BasePresenter<BaseView>> : RxFra
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        val view = inflater.inflate(getLayoutId(), container, false)
+        val view = inflater.inflate(initLayoutId(), container, false)
         initView(view)
         return view
     }
@@ -52,7 +52,7 @@ open abstract class BaseFragment<V: BaseView,P: BasePresenter<BaseView>> : RxFra
 
     protected abstract fun initView(view: View)
 
-    protected abstract fun getLayoutId(): Int
+    protected abstract fun initLayoutId(): Int
 
 
     abstract fun getInstance():BaseFragment<V,P>

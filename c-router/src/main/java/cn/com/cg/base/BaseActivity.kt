@@ -24,6 +24,8 @@ open abstract class BaseActivity<V:BaseView,P: BasePresenter<BaseView>> : RxAppC
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        setContentView(initLayoutId())
+
         RouterBeanManager.getInstance().registerAct(this)
         callBackMethodID = intent.getStringExtra(RouterParamsManager.METHODCALLBACKID)
 
@@ -43,6 +45,7 @@ open abstract class BaseActivity<V:BaseView,P: BasePresenter<BaseView>> : RxAppC
 
     abstract fun createPresenter(): P
     abstract fun createView(): V
+    abstract fun initLayoutId(): Int
     abstract fun initData()
 
 
