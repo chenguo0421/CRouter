@@ -8,7 +8,7 @@ import cn.com.cg.router.manager.params.RouterParamsManager
  * author  chenguo7
  * Date  2019/11/25 11:35
  */
-class DefualtRouterInterceptor : CRouterInterceptor {
+class DefaultRouterInterceptor : CRouterInterceptor {
 
     override fun onInterceptor(paramsManager: RouterParamsManager) {
         //默认拦截器拦截跳转功能测试

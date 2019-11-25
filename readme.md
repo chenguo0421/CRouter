@@ -36,7 +36,7 @@ crouter是一款依赖于python和kotlin来设计的android路由框架，主要
 
     ## 1.1 路由拦截 ##
     	   支持注入自定义路由拦截器，例如在你的Application代码中新增如下代码：
-    	   RouterManager.getInstance().setInterceptor(DefualtRouterInterceptor()).init(this)
+    	   RouterManager.getInstance().setInterceptor(DefaultRouterInterceptor()).init(this)
 
 
 	## 2.可视化日志 ##
