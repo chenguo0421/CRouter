@@ -8,6 +8,26 @@ import %Path.presenter.%NameFMPresenter
 class %NameFragment :%NameFMContract.IView, BaseFragment<%NameFMContract.IView, %NameFMContract.IPresenter<%NameFMContract.IView>>() {
 
     private lateinit var mPresenter: %NameFMContract.IPresenter<%NameFMContract.IView>
+
+    override fun createPresenter(): %NameFMContract.IPresenter<%NameFMContract.IView> {
+        mPresenter = %NameFMPresenter()
+        return mPresenter
+    }
+
+    override fun getInstance(): BaseFragment<%NameFMContract.IView, %NameFMContract.IPresenter<%NameFMContract.IView>> {
+        synchronized(%NameFragment::class){
+            return %NameFragment()
+        }
+    }
+
+    override fun getBaseActivity(): Context {
+        return activity!!
+    }
+
+    override fun createView(): %NameFMContract.IView {
+        return this
+    }
+
     override fun initListener() {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
@@ -16,28 +36,8 @@ class %NameFragment :%NameFMContract.IView, BaseFragment<%NameFMContract.IView, 
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
-    override fun getBaseActivity(): Context {
-        return activity!!
-    }
-
-
-    override fun createPresenter(): %NameFMContract.IPresenter<%NameFMContract.IView> {
-        mPresenter = %NameFMPresenter()
-        return mPresenter
-    }
-
-    override fun createView(): %NameFMContract.IView {
-        return this
-    }
-
-
     override fun initLayoutId(): Int {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
-    override fun getInstance(): BaseFragment<%NameFMContract.IView, %NameFMContract.IPresenter<%NameFMContract.IView>> {
-        synchronized(%NameFragment::class){
-            return %NameFragment()
-        }
-    }
 }
