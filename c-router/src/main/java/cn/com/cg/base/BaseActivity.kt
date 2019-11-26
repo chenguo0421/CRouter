@@ -40,6 +40,7 @@ open abstract class BaseActivity<V:BaseView,P: BasePresenter<BaseView>> : RxAppC
         mPresenter?.attachView(mView!!)
 
         initData()
+        initListener()
     }
 
 
@@ -47,6 +48,7 @@ open abstract class BaseActivity<V:BaseView,P: BasePresenter<BaseView>> : RxAppC
     abstract fun createView(): V
     abstract fun initLayoutId(): Int
     abstract fun initData()
+    abstract fun initListener()
 
 
 

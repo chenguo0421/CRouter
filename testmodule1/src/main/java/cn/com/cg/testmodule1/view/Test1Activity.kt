@@ -1,5 +1,6 @@
-package cn.com.cg.testmodule1
+package cn.com.cg.testmodule1.view
 
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
@@ -8,6 +9,9 @@ import cn.com.cg.router.annotation.CMethod
 import cn.com.cg.router.annotation.CRouter
 import cn.com.cg.router.manager.RouterManager
 import cn.com.cg.router.manager.intf.RouterCallBack
+import cn.com.cg.testmodule1.R
+import cn.com.cg.testmodule1.contract.Test1Contract
+import cn.com.cg.testmodule1.presenter.Test1Presenter
 import kotlinx.android.synthetic.main.t1_activity.*
 
 /**
@@ -17,7 +21,33 @@ import kotlinx.android.synthetic.main.t1_activity.*
  */
 
 @CRouter(path = "Test1Activity")
-class Test1Activity : BaseActivity(), View.OnClickListener, RouterCallBack {
+class Test1Activity :Test1Contract.IView, BaseActivity<Test1Contract.IView,Test1Contract.IPresenter<Test1Contract.IView>>(), View.OnClickListener, RouterCallBack {
+    override fun initListener() {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    private lateinit var mPresenter: Test1Contract.IPresenter<Test1Contract.IView>
+
+    override fun createPresenter(): Test1Contract.IPresenter<Test1Contract.IView> {
+        mPresenter = Test1Presenter()
+        return mPresenter
+    }
+
+    override fun createView(): Test1Contract.IView {
+        return this
+    }
+
+    override fun initLayoutId(): Int {
+        return R.layout.t1_activity
+    }
+
+    override fun initData() {
+
+    }
+
+    override fun getBaseActivity(): Context {
+        return this
+    }
 
     /**
      * 通过接口方法回调
@@ -54,7 +84,7 @@ class Test1Activity : BaseActivity(), View.OnClickListener, RouterCallBack {
         RouterManager.getInstance()
             .with(this)
             .sharedElement(img)
-            .anim(R.anim.slide_in_left,R.anim.slide_out_right)
+            .anim(R.anim.slide_in_left, R.anim.slide_out_right)
             .action("Test2Activity")
             .intent(intent)
             .setCallBack(this)
@@ -75,14 +105,10 @@ class Test1Activity : BaseActivity(), View.OnClickListener, RouterCallBack {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.t1_activity)
         btn1.setOnClickListener(this)
         btn2.setOnClickListener(this)
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
-    }
 }
 
 

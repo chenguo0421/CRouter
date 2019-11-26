@@ -1,11 +1,12 @@
-package cn.com.cg.testmodule2
+package cn.com.cg.testmodule2.view
 
-import android.os.Build
-import android.os.Bundle
-import androidx.annotation.RequiresApi
+import android.content.Context
 import cn.com.cg.base.BaseActivity
 import cn.com.cg.router.annotation.CRouter
 import cn.com.cg.router.manager.RouterManager
+import cn.com.cg.testmodule2.R
+import cn.com.cg.testmodule2.contract.Test2Contract
+import cn.com.cg.testmodule2.presenter.Test2Presenter
 import kotlinx.android.synthetic.main.t2_activity.*
 
 /**
@@ -14,14 +15,27 @@ import kotlinx.android.synthetic.main.t2_activity.*
  * Date  2019/8/27 17:05
  */
 @CRouter("Test2Activity")
-class Test2Activity : BaseActivity(){
+class Test2Activity :Test2Contract.IView, BaseActivity<Test2Contract.IView,Test2Contract.IPresenter<Test2Contract.IView>>(){
+    override fun initListener() {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
 
+    private lateinit var mPresenter: Test2Contract.IPresenter<Test2Contract.IView>
 
-    @RequiresApi(Build.VERSION_CODES.KITKAT)
+    override fun createPresenter(): Test2Contract.IPresenter<Test2Contract.IView> {
+        mPresenter = Test2Presenter()
+        return mPresenter
+    }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.t2_activity)
+    override fun createView(): Test2Contract.IView {
+        return this
+    }
+
+    override fun initLayoutId(): Int {
+        return R.layout.t2_activity
+    }
+
+    override fun initData() {
         btn1.setOnClickListener {
             when(it?.id){
                 R.id.btn1 -> resultData()
@@ -35,8 +49,13 @@ class Test2Activity : BaseActivity(){
         btn3.setOnClickListener {
             callUtilsMethodByMethodPath()
         }
-
     }
+
+    override fun getBaseActivity(): Context {
+        return this
+    }
+
+
 
 
     /**
