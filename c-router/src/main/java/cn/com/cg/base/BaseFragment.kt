@@ -35,26 +35,21 @@ open abstract class BaseFragment<V: BaseView,P: BasePresenter<BaseView>> : RxFra
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        val view = inflater.inflate(getLayoutId(), container, false)
-        initView(view)
-        return view
+        return inflater.inflate(initLayoutId(), container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         RouterBeanManager.getInstance().registerFM(this)
+        initData()
     }
 
 
     abstract fun createPresenter(): P
-
     abstract fun createView(): V
-
-    protected abstract fun initView(view: View)
-
-    protected abstract fun getLayoutId(): Int
-
-
+    protected abstract fun initLayoutId(): Int
+    abstract fun initData()
+    abstract fun initListener()
     abstract fun getInstance():BaseFragment<V,P>
 
 

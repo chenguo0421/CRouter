@@ -2,7 +2,7 @@
           package="cn.com.cg.testmodule2">
     <application>
         <activity
-                android:name=".Test2Activity"
+                android:name=".view.Test2Activity"
                 android:label="@string/app_name"
                 android:theme="@style/AppTheme.NoActionBar">
         </activity>
