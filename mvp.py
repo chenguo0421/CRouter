@@ -198,32 +198,6 @@ def copy_file(sourcePath,targetPath):
 
 
 
-class AnnotationBean:
-
-    def __init__(self, clsPath:str="", clsAnnotation:list=[], methodAnnotation:list=[]):
-        self.clsPath = clsPath
-        self.clsAnnotation = clsAnnotation
-        self.methodAnnotation = methodAnnotation
-
-
-    def _clsPath(self,clsPath):
-        self.clsPath = clsPath
-        return self
-
-
-    def _clsAnnotation(self,clsAnnotation):
-        self.clsAnnotation = clsAnnotation
-        return self
-
-
-    def _methodAnnotation(self,methodAnnotation):
-        self.methodAnnotation = methodAnnotation
-        return self
-
-
-
-
-
 # 读取android根目录下的setting.gradle文件，选出所有的include的module，生成列表
 def get_module_name(rootPath):
     # 打开android根目录下的setting.gradle文件
