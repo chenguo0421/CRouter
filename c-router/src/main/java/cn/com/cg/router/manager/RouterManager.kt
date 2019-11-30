@@ -31,16 +31,16 @@ class RouterManager private constructor(){
      */
     companion object {
 
-        private @Volatile var instance: SoftReference<RouterManager>? = null
+        private @Volatile var instance: RouterManager? = null
         fun getInstance(): RouterManager{
             if (instance == null) {
                 synchronized(this) {
                     if (instance == null) {
-                        instance = SoftReference(RouterManager())
+                        instance = RouterManager()
                     }
                 }
             }
-            return instance!!.get()!!
+            return instance!!
         }
     }
 
