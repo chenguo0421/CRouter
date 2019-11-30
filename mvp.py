@@ -147,6 +147,10 @@ def reWrite(_parentPath,_file,_packagePath,_baseName,type):
                 lin = lin.replace("%Path", _packagePath)
              if "%Name" in lin:
                 lin = lin.replace("%Name", _baseName)
+             if "%User" in lin:
+                lin = lin.replace("%User", _user)
+             if "%Time" in lin:
+                lin = lin.replace("%Time", _time)
              f2.write(lin)
          f1.close()
          f2.close()
@@ -240,6 +244,9 @@ def get_module_class_path(list,rootPath):
 
 # 配置项目根路径 D:\Project\BaseWorkspace\CBase_Kotlin
 _rootPath = 'D:\\Project\\BaseWorkspace\\CBase_Kotlin'
+_user = 'ChenGuo'
+_time = time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(time.time()))
+
 
 # 获取命令行入参
 # mvp所在包路径
