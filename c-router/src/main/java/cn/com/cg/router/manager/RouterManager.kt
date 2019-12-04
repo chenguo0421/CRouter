@@ -8,6 +8,7 @@ import android.view.View
 import androidx.core.app.ActivityCompat
 import androidx.core.app.ActivityOptionsCompat
 import cn.com.cg.base.BaseActivity
+import cn.com.cg.base.BaseDialogFragment
 import cn.com.cg.base.BaseFragment
 import cn.com.cg.clog.CLog
 import cn.com.cg.router.manager.callback.RouterCallBackManager
@@ -163,6 +164,12 @@ class RouterManager private constructor(){
             } else if (cls is BaseFragment<*, *>) {
                 val instance = cls.getInstance()
                 instance.fragmentTag = RouterParamsManager.getInstance().getFragmentTag()
+                clearCatchData()
+                return instance
+            } else if (cls is BaseDialogFragment<*,*>){
+                val instance = cls.getInstance()
+                instance.fragmentTag = RouterParamsManager.getInstance().getFragmentTag()
+                clearCatchData()
                 return instance
             }
         }
