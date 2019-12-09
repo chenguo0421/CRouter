@@ -10,7 +10,7 @@ import cn.com.cg.router.manager.path.RouterBeanManager
 import com.trello.rxlifecycle2.components.support.RxDialogFragment
 import android.view.animation.Animation
 import android.view.animation.TranslateAnimation
-
+import androidx.fragment.app.FragmentManager
 
 
 /**
@@ -90,6 +90,20 @@ abstract class BaseDialogFragment<V: BaseView,P: BasePresenter<V>> : RxDialogFra
         super.onActivityCreated(savedInstanceState)
         dialog?.window?.setBackgroundDrawable(ColorDrawable(Color.parseColor("#FFFFFFFF")))
         dialog?.window?.setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.MATCH_PARENT)
+    }
+
+    override fun show(manager: FragmentManager, tag: String?) {
+        if(isAdded){
+            return
+        }
+        super.show(manager, tag)
+    }
+
+    override fun showNow(manager: FragmentManager, tag: String?) {
+        if(isAdded){
+            return
+        }
+        super.showNow(manager, tag)
     }
 
 
