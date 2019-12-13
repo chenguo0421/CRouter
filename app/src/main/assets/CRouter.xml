@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 	<CRouters>
 		<CRouter>
+			<RouterPath>TestdialogFragment</RouterPath>
+			<ClassPath>cn.com.cg.base.testmvp.view.fragment.TestdialogFragment</ClassPath>
+		</CRouter>
+		<CRouter>
 			<ClassPath>cn.com.cg.testmodule1.utils.MyUtils</ClassPath>
 			<MethodPath>
 				<MethodPathItem>/MyUtils/testCallUtilsMethod</MethodPathItem>
@@ -31,5 +35,14 @@
 		<CRouter>
 			<RouterPath>Test2Activity</RouterPath>
 			<ClassPath>cn.com.cg.testmodule2.view.Test2Activity</ClassPath>
+		</CRouter>
+		<CRouter>
+			<ClassPath>cn.com.cg.ccommon.utils.AnimUtils</ClassPath>
+			<MethodPath>
+				<MethodPathItem>/AnimUtils/slideToUp</MethodPathItem>
+				<MethodPathItem>/AnimUtils/upToSlide</MethodPathItem>
+				<MethodPathItem>/AnimUtils/rightToLeft</MethodPathItem>
+				<MethodPathItem>/AnimUtils/leftToRight</MethodPathItem>
+			</MethodPath>
 		</CRouter>
 	</CRouters>

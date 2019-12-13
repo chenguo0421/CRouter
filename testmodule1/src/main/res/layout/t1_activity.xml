@@ -25,6 +25,13 @@
             android:text="测试Fragment"/>
 
 
+    <Button
+            android:id="@+id/btn3"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:text="测试DialogFragment"/>
+
+
 
     <TextView
             android:id="@+id/back_tv"

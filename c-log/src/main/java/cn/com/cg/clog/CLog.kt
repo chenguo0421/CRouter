@@ -303,6 +303,19 @@ public class CLog(context: Context) : FrameLayout(context),Thread.UncaughtExcept
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
         //检测内存泄漏相关
         mLeakCheck = CheckLeak()
         val handler = Handler(Looper.getMainLooper())
