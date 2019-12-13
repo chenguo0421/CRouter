@@ -9,22 +9,25 @@ import android.os.*
 import android.text.TextUtils
 import android.util.Log
 import android.util.TypedValue
+import android.view.Gravity
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
 import android.widget.LinearLayout
 import android.widget.RelativeLayout
+import android.widget.TextView
 import androidx.appcompat.widget.AppCompatImageView
 import androidx.recyclerview.widget.LinearLayoutManager
 import cn.com.cg.clog.adapter.CLogAdapter
 import cn.com.cg.clog.annotation.IgnoreCLogView
 import cn.com.cg.clog.utils.CheckLeak
-import cn.com.cg.clog.utils.LogType
 import cn.com.cg.clog.view.CLogRecyclerView
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
+
+
 
 /**
  * Discription  {}
@@ -32,16 +35,20 @@ import kotlin.collections.ArrayList
  * Date  2019/9/16 16:05
  */
 public class CLog(context: Context) : FrameLayout(context),Thread.UncaughtExceptionHandler,
-    Application.ActivityLifecycleCallbacks, View.OnClickListener, View.OnLongClickListener{
+    Application.ActivityLifecycleCallbacks, View.OnLongClickListener,View.OnClickListener{
 
-
-    private lateinit var switchLog: AppCompatImageView
+    private lateinit var switchLog: TextView
+    private lateinit var loge: TextView
+    private lateinit var logw: TextView
+    private lateinit var logi: TextView
+    private lateinit var logd: TextView
+    private lateinit var logv: TextView
+    private lateinit var logClear: TextView
     private var mShortClick: Int = 0
     private var timestamp: Long = 0L
     private lateinit var btnFrontPage: AppCompatImageView
     private lateinit var btnNextPage: AppCompatImageView
     private lateinit var mSrcView: View
-    private lateinit var mCurrentActivity: Activity
     private val cyclicTime:Long = 2000L
 
     private lateinit var mLeakCheck: CheckLeak
@@ -53,10 +60,12 @@ public class CLog(context: Context) : FrameLayout(context),Thread.UncaughtExcept
     private lateinit var mLogAdapter: CLogAdapter
     private lateinit var mRVLog: CLogRecyclerView
     private lateinit var mLogContainer: RelativeLayout
-    private var count:Int = 0
 
     private val SHORT_CLICK = 19
-    private val LONG_CLICK = 3
+
+
+    var mLastTime: Long = 0
+    var mCurTime: Long = 0
 
 
     private var mDefaultHandler: Thread.UncaughtExceptionHandler? = null
@@ -80,15 +89,59 @@ public class CLog(context: Context) : FrameLayout(context),Thread.UncaughtExcept
 
     private val handler = object : Handler(Looper.getMainLooper()) {
         override fun handleMessage(msg: Message) {
+            if (msg.what == 999998){//开关单击事件
+                loggerSwitch(true)
+                return
+            }
+            if (msg.what == 999999){//开关双击事件
+                showLogTypeBtn()
+                return
+            }
             val text = msg.obj as String
             addText(msg.what, text)
         }
     }
 
 
+    private fun showLogTypeBtn() {
+        if(loge.visibility == View.INVISIBLE){//显示分类开关，默认显示到v
+            loge.visibility = View.VISIBLE
+            logw.visibility = View.VISIBLE
+            logi.visibility = View.VISIBLE
+            logd.visibility = View.VISIBLE
+            logv.visibility = View.VISIBLE
+            logClear.visibility = View.VISIBLE
+        }else{//隐藏分类开关，并显示全部日志
+            loge.visibility = View.INVISIBLE
+            logw.visibility = View.INVISIBLE
+            logi.visibility = View.INVISIBLE
+            logd.visibility = View.INVISIBLE
+            logv.visibility = View.INVISIBLE
+            logClear.visibility = View.INVISIBLE
+        }
+    }
+
 
     override fun onClick(view: View?) {
         when(view){
+            loge ->{
+                refreshLogList(Log.ERROR)
+            }
+            logw ->{
+                refreshLogList(Log.WARN)
+            }
+            logi ->{
+                refreshLogList(Log.INFO)
+            }
+            logd ->{
+                refreshLogList(Log.DEBUG)
+            }
+            logv ->{
+                refreshLogList(Log.VERBOSE)
+            }
+            logClear ->{
+                clearLogList()
+            }
             btnFrontPage ->{
                 showFrontPage()
             }
@@ -96,9 +149,34 @@ public class CLog(context: Context) : FrameLayout(context),Thread.UncaughtExcept
                 showNextPage()
             }
             switchLog -> {
-                loggerSwitch(true)
+                mLastTime = mCurTime
+                mCurTime = System.currentTimeMillis()
+                if (mCurTime - mLastTime < 500) {//双击事件
+                    mCurTime = 0
+                    mLastTime = 0
+                    handler.removeMessages(999998)
+                    handler.sendEmptyMessage(999999)
+                } else {//单击事件
+                    handler.sendEmptyMessageDelayed(999998, 550)
+                }
             }
         }
+    }
+
+    private fun clearLogList() {
+        mLogList.clear()
+        mFilterList.clear()
+        mLogAdapter.notifyDataSetChanged()
+    }
+
+
+    private fun refreshLogList(type: Int) {
+        if (type == logType){
+            return
+        }
+        logType = type
+        isChangeLogType = true
+        refreshList()
     }
 
 
@@ -184,8 +262,8 @@ public class CLog(context: Context) : FrameLayout(context),Thread.UncaughtExcept
         }
     }
 
-    private fun addText(type: Int, text: String) {
-        val level = arrayOf("#000000", "", "#000000", "#2FB1FE", "#00ff00", "#EFC429", "#FF0000")
+    private @Synchronized fun addText(type: Int, text: String) {
+        val level = arrayOf("#000000", "", "#000000", "#2FB1FE", "#88ff88", "#ffff00", "#FF0000")
         val str = String.format("<font color=\"" + level[type] + "\">%s</font>", text)
         mLogList.add(str)
 //        while (mLogList.size > 100)  mLogList.removeAt(0)
@@ -193,22 +271,45 @@ public class CLog(context: Context) : FrameLayout(context),Thread.UncaughtExcept
     }
 
 
+    private var lastFilterIndexInLogIndex: Int = 0
     /*刷新日志列表*/
     private fun refreshList() {
-//        mFilterList.clear()//清空过滤列表
-        for (i in mLogList.indices) {
-            val s = mLogList[i]
-            var l = 2
-            for (j in 2..6) {
-                val level1 = getLevel(j)
+        //过滤类型变换，清空过滤列表
+        if (isChangeLogType){
+            mFilterList.clear()
+            lastFilterIndexInLogIndex = 0
+            //将所有的同一类Log日志给mFilterList
+        }
+
+        if (logType > Log.VERBOSE && logType <= Log.ERROR) {
+            //往过滤列表中添加数据
+            for (i in mLogList.indices) {
+                val s = mLogList[i]
+                val level1 = getLevel(logType)
                 if (s.contains("]$level1/")) {
-                    l = j
-                    break
+                    if (mFilterList.size == 0) {
+                        mFilterList.add(s)
+                        lastFilterIndexInLogIndex = i
+                        continue
+                    }
+                    if (i <= lastFilterIndexInLogIndex) {
+                        continue
+                    }
+                    mFilterList.add(s)
+                    lastFilterIndexInLogIndex = i
                 }
             }
+
+        }else{
+            if (mLogList.size > mFilterList.size) {
+                mFilterList.addAll(mLogList.subList(mFilterList.size,mLogList.size))
+            }
         }
+
+
         mLogAdapter.notifyDataSetChanged()
 
+        isChangeLogType = false
         if (isAutoScroll){
             mRVLog.smoothScrollToPosition(mLogAdapter.itemCount - 1)
         }
@@ -216,6 +317,7 @@ public class CLog(context: Context) : FrameLayout(context),Thread.UncaughtExcept
 
 
 
+    @SuppressLint("SetTextI18n")
     private fun initAttr(app:Application){
         app.registerActivityLifecycleCallbacks(this)
         //获取系统默认异常处理器
@@ -252,7 +354,7 @@ public class CLog(context: Context) : FrameLayout(context),Thread.UncaughtExcept
 
 
         //日志列表适配器
-        mLogAdapter = CLogAdapter(context, mLogList,typeValue)
+        mLogAdapter = CLogAdapter(context, mFilterList,typeValue)
         mRVLog.adapter = mLogAdapter
 
 
@@ -286,8 +388,12 @@ public class CLog(context: Context) : FrameLayout(context),Thread.UncaughtExcept
 
 
         //日志开关，
-        switchLog = AppCompatImageView(context)
-        switchLog.setImageResource(R.drawable.drawable_switchlog)
+        switchLog = TextView(context)
+        switchLog.setBackgroundResource(R.drawable.drawable_switchlog)
+        switchLog.textSize = 8f
+        switchLog.setTextColor(resources.getColor(R.color.log_color_black))
+        switchLog.text = "Log"
+        switchLog.gravity = Gravity.CENTER
         val sp = RelativeLayout.LayoutParams(widthPixels/10,widthPixels/10)
         sp.addRule(RelativeLayout.ALIGN_PARENT_TOP)
         sp.addRule(RelativeLayout.ALIGN_PARENT_RIGHT)
@@ -301,17 +407,114 @@ public class CLog(context: Context) : FrameLayout(context),Thread.UncaughtExcept
         mLogContainer.addView(switchLog)
 
 
+        //日志类型 6
+        loge = TextView(context)
+        loge.setBackgroundResource(R.drawable.drawable_circle_red)
+        loge.textSize = 16f
+        loge.setTextColor(resources.getColor(R.color.log_color_black))
+        loge.text = "E"
+        loge.gravity = Gravity.CENTER
+        val spe = RelativeLayout.LayoutParams(widthPixels/10,widthPixels/10)
+        spe.addRule(RelativeLayout.ALIGN_PARENT_TOP)
+        spe.addRule(RelativeLayout.ALIGN_PARENT_RIGHT)
+        spe.topMargin = widthPixels/10 * 3
+        spe.rightMargin = widthPixels/15
+        loge.layoutParams = spe
+        loge.setOnClickListener(this)
+        loge.visibility = View.INVISIBLE
+
+        mLogContainer.addView(loge)
+
+        //日志类型 5
+        logw = TextView(context)
+        logw.setBackgroundResource(R.drawable.drawable_circle_yellow)
+        logw.textSize = 16f
+        logw.setTextColor(resources.getColor(R.color.log_color_black))
+        logw.text = "W"
+        logw.gravity = Gravity.CENTER
+        val spw = RelativeLayout.LayoutParams(widthPixels/10,widthPixels/10)
+        spw.addRule(RelativeLayout.ALIGN_PARENT_TOP)
+        spw.addRule(RelativeLayout.ALIGN_PARENT_RIGHT)
+        spw.topMargin = (widthPixels/10 * 4.5).toInt()
+        spw.rightMargin = widthPixels/15
+        logw.layoutParams = spw
+        logw.setOnClickListener(this)
+        logw.visibility = View.INVISIBLE
+
+        mLogContainer.addView(logw)
+
+        //日志类型 4
+        logi = TextView(context)
+        logi.setBackgroundResource(R.drawable.drawable_circle_green)
+        logi.textSize = 16f
+        logi.setTextColor(resources.getColor(R.color.log_color_black))
+        logi.text = "I"
+        logi.gravity = Gravity.CENTER
+        val spi = RelativeLayout.LayoutParams(widthPixels/10,widthPixels/10)
+        spi.addRule(RelativeLayout.ALIGN_PARENT_TOP)
+        spi.addRule(RelativeLayout.ALIGN_PARENT_RIGHT)
+        spi.topMargin = widthPixels/10 * 6
+        spi.rightMargin = widthPixels/15
+        logi.layoutParams = spi
+        logi.setOnClickListener(this)
+        logi.visibility = View.INVISIBLE
+
+        mLogContainer.addView(logi)
+
+        //日志类型 3
+        logd = TextView(context)
+        logd.setBackgroundResource(R.drawable.drawable_circle_blue)
+        logd.textSize = 16f
+        logd.setTextColor(resources.getColor(R.color.log_color_black))
+        logd.text = "D"
+        logd.gravity = Gravity.CENTER
+        val spd = RelativeLayout.LayoutParams(widthPixels/10,widthPixels/10)
+        spd.addRule(RelativeLayout.ALIGN_PARENT_TOP)
+        spd.addRule(RelativeLayout.ALIGN_PARENT_RIGHT)
+        spd.topMargin = (widthPixels/10 * 7.5).toInt()
+        spd.rightMargin = widthPixels/15
+        logd.layoutParams = spd
+        logd.setOnClickListener(this)
+        logd.visibility = View.INVISIBLE
+
+        mLogContainer.addView(logd)
+
+        //日志类型 2
+        logv = TextView(context)
+        logv.setBackgroundResource(R.drawable.drawable_circle_gray)
+        logv.textSize = 16f
+        logv.setTextColor(resources.getColor(R.color.log_color_black))
+        logv.text = "V"
+        logv.gravity = Gravity.CENTER
+        val spv = RelativeLayout.LayoutParams(widthPixels/10,widthPixels/10)
+        spv.addRule(RelativeLayout.ALIGN_PARENT_TOP)
+        spv.addRule(RelativeLayout.ALIGN_PARENT_RIGHT)
+        spv.topMargin = widthPixels/10 * 9
+        spv.rightMargin = widthPixels/15
+        logv.layoutParams = spv
+        logv.setOnClickListener(this)
+        logv.visibility = View.INVISIBLE
+
+        mLogContainer.addView(logv)
 
 
+        //日志类型 2
+        logClear = TextView(context)
+        logClear.setBackgroundResource(R.drawable.drawable_switchlog)
+        logClear.textSize = 8f
+        logClear.setTextColor(resources.getColor(R.color.log_color_black))
+        logClear.text = "Clear"
+        logClear.gravity = Gravity.CENTER
+        val spc = RelativeLayout.LayoutParams(widthPixels/10,widthPixels/10)
+        spc.addRule(RelativeLayout.ALIGN_PARENT_TOP)
+        spc.addRule(RelativeLayout.ALIGN_PARENT_RIGHT)
+        spc.topMargin = (widthPixels/10 * 10.5).toInt()
+        spc.rightMargin = widthPixels/15
+        logClear.layoutParams = spc
+        logClear.setOnClickListener(this)
+        logClear.visibility = View.INVISIBLE
 
-
-
-
-
-
-
-
-
+        mLogContainer.addView(logClear)
 
 
 
@@ -486,7 +689,8 @@ public class CLog(context: Context) : FrameLayout(context),Thread.UncaughtExcept
         private const val logScout:Int = 8
         private const val debuggable = true //正式环境(false)不打印日志，也不能唤起app的debug界面
         private var isAutoScroll = false
-        private var logType = LogType.d
+        private var isChangeLogType:Boolean = true
+        private var logType = Log.VERBOSE
 
         public fun init(app:Application){
             if (debuggable && instance == null) {
@@ -524,27 +728,27 @@ public class CLog(context: Context) : FrameLayout(context),Thread.UncaughtExcept
         }
 
         private fun v(tag: String, msg: String) {
-            if (instance != null && logType == LogType.v) instance?.print(Log.VERBOSE, tag, msg)
+            if (instance != null) instance?.print(Log.VERBOSE, tag, msg)
         }
 
         private fun d(tag: String, msg: String) {
-            if (instance != null && logType == LogType.d) instance?.print(Log.DEBUG, tag, msg)
+            if (instance != null) instance?.print(Log.DEBUG, tag, msg)
         }
 
         private fun i(tag: String, msg: String) {
-            if (instance != null && logType == LogType.i) instance?.print(Log.INFO, tag, msg)
+            if (instance != null) instance?.print(Log.INFO, tag, msg)
         }
 
         private fun w(tag: String, msg: String) {
-            if (instance != null && logType == LogType.w) instance?.print(Log.WARN, tag, msg)
+            if (instance != null) instance?.print(Log.WARN, tag, msg)
         }
 
         private fun e(tag: String, msg: String) {
-            if (instance != null && logType == LogType.e) instance?.print(Log.ERROR, tag, msg)
+            if (instance != null) instance?.print(Log.ERROR, tag, msg)
         }
 
         private fun s(tag: String, msg: String) {
-            if (instance != null && logType == LogType.s) instance?.print(logScout, tag, msg)
+            if (instance != null) instance?.print(logScout, tag, msg)
         }
 
 
