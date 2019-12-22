@@ -3,6 +3,7 @@
 import sys
 import os
 import re
+import time
 import xml.dom.minidom as Dom
 
 
@@ -10,7 +11,7 @@ def doNext(_rootPath,_templateFilePath,_packagePath,_baseName,_type):
     print("start create mvp file, please wait...")
 
     # 处理mvp所在包路径，假如传入的路径是D:\Project\BaseWorkspace\CBase_Kotlin\app\src\main\java\cn\com\cg\testmvp
-    # 则处理成"cn\com\cg\testmvp"
+    # 则处理成"cn.com.cg.testmvp"
     _packagePath = disposePath(_packagePath)
     print("dispose packagePath as %s" % _packagePath)
 
@@ -66,9 +67,9 @@ def disposePath(_packagePath):
     length = len(listPath)
     if len(listPath) > 1:
        path = listPath[len(listPath) - 1]
-       return path.replace(".","\\")
+       return path.replace(".","\\").replace("@_@",".")
     else:
-       return tempPath.replace(".","\\")
+       return tempPath.replace(".","\\").replace("@_@",".")
 
 
 # 驼峰式命名，首字母大写
@@ -151,6 +152,13 @@ def reWrite(_parentPath,_file,_packagePath,_baseName,type):
                 lin = lin.replace("%User", _user)
              if "%Time" in lin:
                 lin = lin.replace("%Time", _time)
+             if "%BaseType" in lin:
+                lin = lin.replace("%BaseType", _baseType)
+             if "%DialogAnim" in lin:
+                if 'dialogfragment' != _type:
+                   continue
+                else:
+                   lin = lin.replace("%DialogAnim", "")
              f2.write(lin)
          f1.close()
          f2.close()
@@ -160,6 +168,7 @@ def reWrite(_parentPath,_file,_packagePath,_baseName,type):
 
 # 将文件路径的分隔符替换为点号
 def changePathConnectorType(path):
+    _tempPath = path.replace(".","@_@")
     #将路径处理为以.连接
     _tempPath = path.replace("/",".")
     _tempPath = _tempPath.replace("\\",".")
@@ -242,10 +251,11 @@ def get_module_class_path(list,rootPath):
 # 通过脚本方式，自动创建MVP的View，Presenter，Model，Contract以及关联关系，并初始化一些方法
 
 
-# 配置项目根路径 D:\Project\BaseWorkspace\CBase_Kotlin
-_rootPath = 'D:\\Project\\BaseWorkspace\\CBase_Kotlin'
+# 配置项目根路径 D:\Project\BaseWorkspace\CBase_Kotlin_V1.0.0\CRouter
+_rootPath = 'D:\\Project\\BaseWorkspace\\CBase_Kotlin_V1.0.0\\CRouter'
 _user = 'ChenGuo'
 _time = time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(time.time()))
+_baseType = "Base"
 
 
 # 获取命令行入参
@@ -272,19 +282,13 @@ if not os.path.exists(_templateFilePath):
 
 # 处理mvp服务类型，activity或fragment，若不是此两种，则直接停止脚本
 _type = _type.lower()
-if 'activity' == _type or 'fragment' == _type:
+if 'activity' == _type or 'fragment' == _type or 'dialogfragment' == _type:
+    if 'dialogfragment' == _type:
+        _baseType = "BaseDialog"
+    else:
+        _baseType = "Base"
+    print("BaseType is %s" % _baseType)
     doNext(_rootPath,_templateFilePath,_packagePath,_baseName,_type)
 else:
    print("not support other type, please use 'activity' or 'fragment' as the type")
    quit()
-
-
-
-
-
-
-
-
-
-
-

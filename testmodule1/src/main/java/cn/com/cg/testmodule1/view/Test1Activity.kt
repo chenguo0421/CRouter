@@ -5,6 +5,8 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import cn.com.cg.base.BaseActivity
+import cn.com.cg.base.BaseDialogFragment
+import cn.com.cg.ccommon.utils.ToastUtils
 import cn.com.cg.router.annotation.CMethod
 import cn.com.cg.router.annotation.CRouter
 import cn.com.cg.router.manager.RouterManager
@@ -22,6 +24,10 @@ import kotlinx.android.synthetic.main.t1_activity.*
 
 @CRouter(path = "Test1Activity")
 class Test1Activity :Test1Contract.IView, BaseActivity<Test1Contract.IView,Test1Contract.IPresenter<Test1Contract.IView>>(), View.OnClickListener, RouterCallBack {
+
+    var testFragment: BaseDialogFragment<*,*>? = null
+
+
     override fun initListener() {
     }
 
@@ -60,6 +66,13 @@ class Test1Activity :Test1Contract.IView, BaseActivity<Test1Contract.IView,Test1
         when(view?.id){
             R.id.btn1 -> gotoT2()
             R.id.btn2 -> gotoFMActivity()
+            R.id.btn3 -> {
+                ToastUtils.show("准备跳转到DialogFragment")
+                if (testFragment == null) {
+                    testFragment = RouterManager.getInstance().with(this).fragmentTag("testdialogFragment1").action("TestdialogFragment").navigation() as BaseDialogFragment<*, *>?
+                }
+                testFragment?.show(supportFragmentManager,"testdialogFragment1")
+            }
         }
     }
 
@@ -106,6 +119,7 @@ class Test1Activity :Test1Contract.IView, BaseActivity<Test1Contract.IView,Test1
         super.onCreate(savedInstanceState)
         btn1.setOnClickListener(this)
         btn2.setOnClickListener(this)
+        btn3.setOnClickListener(this)
     }
 
 }
