@@ -20,8 +20,11 @@ class RouterMethodManager {
     fun invoke(clzPath: String?,tag:String?, action: String?,vararg params:Any): Any? {
         val instance = Class.forName(clzPath!!).newInstance()
         if(instance is BaseActivity<*,*>){
-            if (getInvokeActivityMaps(clzPath).size > 0){
-                return invokeMethod(getInvokeActivityMaps(clzPath), RouterBeanManager.getInstance().getActBean(clzPath!!), action, params)
+            var bean = RouterBeanManager.getInstance().getActBean(clzPath)
+            if (bean != null) {
+                if (getInvokeActivityMaps(clzPath).size > 0){
+                    return invokeMethod(getInvokeActivityMaps(clzPath), bean, action, params)
+                }
             }
         }else if(instance is BaseFragment<*,*>){
             val realClsPath = RouterPathManager.getInstance().findRealPathByTag(clzPath,tag)
@@ -42,9 +45,11 @@ class RouterMethodManager {
             }
 
         }else {
-            if (getInvokeOthersMaps(clzPath).size > 0) {
-                return invokeMethod(getInvokeOthersMaps(clzPath), RouterBeanManager.getInstance().getOtherBean(clzPath!!), action, params
-                )
+            var bean = RouterBeanManager.getInstance().getOtherBean(clzPath)
+            if (bean != null) {
+                if (getInvokeOthersMaps(clzPath).size > 0) {
+                    return invokeMethod(getInvokeOthersMaps(clzPath), bean, action, params)
+                }
             }
         }
         return null
@@ -89,7 +94,7 @@ class RouterMethodManager {
         }catch (e:Exception){
             e.printStackTrace()
         }
-      return tempMap
+        return tempMap
     }
 
     private fun getInvokeActivityMaps(clzPath: String?): HashMap<String,Method> {
