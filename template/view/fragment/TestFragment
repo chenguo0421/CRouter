@@ -1,5 +1,6 @@
 package %Path.view.fragment
 
+import android.os.Bundle
 import android.content.Context
 import cn.com.cg.base.intf.EnterAnimType
 import cn.com.cg.base.%BaseTypeFragment
@@ -12,7 +13,7 @@ import %Path.presenter.%NameFMPresenter
  *  description : { 请添加该类的描述 }
  */
 class %NameFragment :%NameFMContract.IView, %BaseTypeFragment<%NameFMContract.IView, %NameFMContract.IPresenter<%NameFMContract.IView>>() {
-
+    private lateinit var bundle:Bundle
     private lateinit var mPresenter: %NameFMContract.IPresenter<%NameFMContract.IView>
 
     override fun createPresenter(): %NameFMContract.IPresenter<%NameFMContract.IView> {
@@ -32,6 +33,10 @@ class %NameFragment :%NameFMContract.IView, %BaseTypeFragment<%NameFMContract.IV
 
     override fun getBaseActivity(): Context {
         return activity!!
+    }
+
+    override fun setBundleExtra(bundle: Bundle) {
+        this.bundle = bundle
     }
 
     override fun createView(): %NameFMContract.IView {

@@ -1,6 +1,7 @@
 package cn.com.cg.testmodule2.view.fragment
 
 import android.content.Context
+import android.os.Bundle
 import android.util.Log
 import cn.com.cg.base.BaseFragment
 import cn.com.cg.router.annotation.CMethod
@@ -17,6 +18,7 @@ import kotlinx.android.synthetic.main.fm_my.*
  */
 @CRouter("MyFragment")
 class MyFragment :MyFMContract.IView, BaseFragment<MyFMContract.IView,MyFMContract.IPresenter<MyFMContract.IView>>() {
+    private lateinit var bundle: Bundle
     override fun initData() {
     }
 
@@ -48,6 +50,10 @@ class MyFragment :MyFMContract.IView, BaseFragment<MyFMContract.IView,MyFMContra
         synchronized(MyFragment::class){
             return MyFragment()
         }
+    }
+
+    override fun setBundleExtra(bundle: Bundle) {
+        this.bundle = bundle
     }
 
 

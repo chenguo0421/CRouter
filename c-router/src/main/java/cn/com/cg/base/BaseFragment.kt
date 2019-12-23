@@ -52,6 +52,7 @@ open abstract class BaseFragment<V: BaseView,P: BasePresenter<V>> : RxFragment()
     abstract fun initData()
     abstract fun initListener()
     abstract fun getInstance():BaseFragment<V,P>
+    abstract fun setBundleExtra(bundle: Bundle)
 
 
     override fun onDestroy() {

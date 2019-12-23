@@ -1,6 +1,7 @@
 package cn.com.cg.base.testmvp.view.fragment
 
 import android.content.Context
+import android.os.Bundle
 import cn.com.cg.base.intf.EnterAnimType
 import cn.com.cg.base.BaseDialogFragment
 import cn.com.cg.base.R
@@ -15,7 +16,7 @@ import cn.com.cg.router.annotation.CRouter
  */
 @CRouter(path = "TestdialogFragment")
 class TestdialogFragment :TestdialogFMContract.IView, BaseDialogFragment<TestdialogFMContract.IView, TestdialogFMContract.IPresenter<TestdialogFMContract.IView>>() {
-
+    private lateinit var bundle: Bundle
     private lateinit var mPresenter: TestdialogFMContract.IPresenter<TestdialogFMContract.IView>
 
     override fun createPresenter(): TestdialogFMContract.IPresenter<TestdialogFMContract.IView> {
@@ -35,6 +36,10 @@ class TestdialogFragment :TestdialogFMContract.IView, BaseDialogFragment<Testdia
 
     override fun getBaseActivity(): Context {
         return activity!!
+    }
+
+    override fun setBundleExtra(bundle: Bundle) {
+        this.bundle = bundle
     }
 
     override fun createView(): TestdialogFMContract.IView {

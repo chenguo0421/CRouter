@@ -1,6 +1,7 @@
 package cn.com.cg.testmodule2.view.fragment
 
 import android.content.Context
+import android.os.Bundle
 import cn.com.cg.base.BaseFragment
 import cn.com.cg.router.annotation.CRouter
 import cn.com.cg.testmodule2.R
@@ -14,6 +15,8 @@ import cn.com.cg.testmodule2.presenter.PortalFMPresenter
  */
 @CRouter("PortalFragment")
 class PortalFragment :PortalFMContract.IView, BaseFragment<PortalFMContract.IView,PortalFMContract.IPresenter<PortalFMContract.IView>>(){
+
+    private lateinit var bundle: Bundle
     override fun initData() {
     }
 
@@ -36,6 +39,9 @@ class PortalFragment :PortalFMContract.IView, BaseFragment<PortalFMContract.IVie
         return this
     }
 
+    override fun setBundleExtra(bundle: Bundle) {
+        this.bundle = bundle
+    }
 
     override fun initLayoutId(): Int {
         return R.layout.fm_portal

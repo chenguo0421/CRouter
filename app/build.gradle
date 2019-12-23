@@ -47,7 +47,7 @@ dependencies {
 
 task scanProjectByPython(type: Exec) {
     workingDir './'
-    commandLine "python","../pythondemo.py","D:\\Project\\BaseWorkspace\\CBase_Kotlin"
+    commandLine "python","../pythondemo.py","F:\\Project\\GithubProject\\CBase\\CRouter"
 }
 
 afterEvaluate {

@@ -107,6 +107,7 @@ abstract class BaseDialogFragment<V: BaseView,P: BasePresenter<V>> : RxDialogFra
     abstract fun initListener()
     abstract fun getInstance():BaseDialogFragment<V,P>
     abstract fun isEnterAnimSlideToUp(): EnterAnimType
+    abstract fun setBundleExtra(bundle: Bundle)
 
 
     override fun onDestroy() {
