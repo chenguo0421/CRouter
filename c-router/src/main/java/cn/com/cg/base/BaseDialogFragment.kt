@@ -8,11 +8,8 @@ import cn.com.cg.mvp.base.BasePresenter
 import cn.com.cg.mvp.base.intf.BaseView
 import cn.com.cg.router.manager.path.RouterBeanManager
 import com.trello.rxlifecycle2.components.support.RxDialogFragment
-import android.view.animation.Animation
-import android.view.animation.TranslateAnimation
 import androidx.fragment.app.FragmentManager
-import cn.com.cg.base.intf.EnterAnimType
-import cn.com.cg.router.manager.RouterManager
+import cn.com.cg.router.R
 
 
 /**
@@ -24,7 +21,7 @@ abstract class BaseDialogFragment<V: BaseView,P: BasePresenter<V>> : RxDialogFra
     open var fragmentTag:String? = ""
     private var mView: V? = null
     private var mPresenter: P? = null
-    private var orientation:EnterAnimType? = EnterAnimType.RIGHT_TO_LEFT
+    private var orientation:Int = R.style.RightAnimation
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -39,38 +36,15 @@ abstract class BaseDialogFragment<V: BaseView,P: BasePresenter<V>> : RxDialogFra
 
         mPresenter?.attachView(mView!!)
 
-        orientation = isEnterAnimSlideToUp()
+        orientation = fragmentIOAnimation()
     }
 
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         dialog?.requestWindowFeature(Window.FEATURE_NO_TITLE)
-        var v = inflater.inflate(initLayoutId(), container, false)
-        animByOrientation(v)
-        return v
+        dialog?.window?.setWindowAnimations(orientation)
+        return inflater.inflate(initLayoutId(), container, false)
     }
-
-    private fun animByOrientation(v:View) {
-        when (orientation) {
-            EnterAnimType.RIGHT_TO_LEFT -> RouterManager.getInstance()
-                .with(activity!!)
-                .action("/AnimUtils/rightToLeft")
-                .callMethod(v)
-            EnterAnimType.LEFT_TO_RIGHT -> RouterManager.getInstance()
-                .with(activity!!)
-                .action("/AnimUtils/leftToRight")
-                .callMethod(v)
-            EnterAnimType.SLIDE_TO_UP -> RouterManager.getInstance()
-                .with(activity!!)
-                .action("/AnimUtils/slideToUp")
-                .callMethod(v)
-            EnterAnimType.UP_TO_SLIDE -> RouterManager.getInstance()
-                .with(activity!!)
-                .action("/AnimUtils/upToSlide")
-                .callMethod(v)
-        }
-    }
-
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -106,7 +80,7 @@ abstract class BaseDialogFragment<V: BaseView,P: BasePresenter<V>> : RxDialogFra
     abstract fun initData()
     abstract fun initListener()
     abstract fun getInstance():BaseDialogFragment<V,P>
-    abstract fun isEnterAnimSlideToUp(): EnterAnimType
+    abstract fun fragmentIOAnimation(): Int
     abstract fun setBundleExtra(bundle: Bundle)
 
 

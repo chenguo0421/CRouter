@@ -27,8 +27,8 @@ class %NameFragment :%NameFMContract.IView, %BaseTypeFragment<%NameFMContract.IV
         }
     }
 
-    override fun isEnterAnimSlideToUp(): EnterAnimType {%DialogAnim
-        return EnterAnimType.RIGHT_TO_LEFT%DialogAnim
+    override fun fragmentIOAnimation(): Int {%DialogAnim
+           return R.style.RightAnimation%DialogAnim
     }%DialogAnim
 
     override fun getBaseActivity(): Context {
