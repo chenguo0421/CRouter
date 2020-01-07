@@ -2,7 +2,6 @@ package %Path.view.fragment
 
 import android.os.Bundle
 import android.content.Context
-import cn.com.cg.base.intf.EnterAnimType
 import cn.com.cg.base.%BaseTypeFragment
 import %Path.contract.%NameFMContract
 import %Path.presenter.%NameFMPresenter
