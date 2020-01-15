@@ -49,7 +49,7 @@ task scanProjectByPython(type: Exec) {
     File rd = getRootDir() //获取项目根路径
     println "rootdir = ${rd.getAbsolutePath()}"
     workingDir './'
-    commandLine "python","../pythondemo.py","${rd.getAbsolutePath()}"
+    commandLine "python","${rd.getAbsolutePath()}/pythondemo.py","${rd.getAbsolutePath()}"
 }
 
 afterEvaluate {
