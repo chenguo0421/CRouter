@@ -46,8 +46,10 @@ dependencies {
 
 
 task scanProjectByPython(type: Exec) {
+    File rd = getRootDir() //获取项目根路径
+    println "rootdir = ${rd.getAbsolutePath()}"
     workingDir './'
-    commandLine "python","../pythondemo.py","F:\\Project\\GithubProject\\CBase\\CRouter"
+    commandLine "python","../pythondemo.py","${rd.getAbsolutePath()}"
 }
 
 afterEvaluate {

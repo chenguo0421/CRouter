@@ -251,8 +251,9 @@ def get_module_class_path(list,rootPath):
 # 通过脚本方式，自动创建MVP的View，Presenter，Model，Contract以及关联关系，并初始化一些方法
 
 
-# 配置项目根路径 D:\Project\BaseWorkspace\CBase_Kotlin_V1.0.0\CRouter
-_rootPath = 'D:\\Project\\BaseWorkspace\\CBase_Kotlin_V1.0.0\\CRouter'
+# 配置项目根路径 D:\workspace\github_wokspace\CRouter\CRouter
+# _rootPath = 'D:\workspace\github_wokspace\CRouter\CRouter'
+_rootPath,fileName = os.path.split(os.path.realpath(__file__))
 _user = 'ChenGuo'
 _time = time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(time.time()))
 _baseType = "Base"
