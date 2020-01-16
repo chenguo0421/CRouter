@@ -54,6 +54,7 @@ task scanProjectByPython(type: Exec) {
 
 afterEvaluate {
     tasks.matching {
+        println "app module name = ${it.name}"
         it.name.startsWith('process') && (it.name.endsWith('ReleaseJavaRes') || it.name.endsWith
                 ('DebugJavaRes'))
     }.each { tk ->

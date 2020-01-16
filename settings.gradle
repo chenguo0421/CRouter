@@ -1,1 +1,61 @@
 include ':app', ':c-router', ':testmodule1', ':testmodule2', ':c-log', ':c-common', ':c-net', ':c-portal'
+
+
+// 以下代码参考博客:
+// https://blog.csdn.net/tangedegushi/article/details/82800228
+// https://blog.csdn.net/Innost/article/details/48228651
+//监听gradle执行
+gradle.addBuildListener(new BuildListener() {
+    //Called when the build is started
+    //看文档注释说这里一开始构建就会执行，但就是没看见的打印的log
+    @Override
+    void buildStarted(Gradle gradle) {
+        println "gradle start ======================================== "
+    }
+    //Called when the build settings have been loaded and evaluated. The settings object
+    // is fully configured and is ready to use to load the build projects
+    //Settings对象加载和评估完成后执行这里,执行完这里即将开始构建Project对象
+    @Override
+    void settingsEvaluated(Settings settings) {
+        println "setting evaluated = "+settings.rootProject.children
+    }
+
+    //Called when the projects for the build have been created from the settings.
+    // None of the projects have been evaluated
+    //当所有的Project对象构建完后会执行到这里，执行到这里时，Project还没有评估
+    @Override
+    void projectsLoaded(Gradle gradle) {
+        gradle.allprojects { project ->
+            println "project name = "+project.name
+        }
+        println "projects load"
+    }
+    //Called when all projects for the build have been evaluated. The project objects
+    // are fully configured and are ready to use to populate the task graph
+    //在所有的Project对象构建完并且已经评估后会执行到这里，之后就开始执行Project中的任务了
+    @Override
+    void projectsEvaluated(Gradle gradle) {
+        println "projects valuated"
+    }
+    //Called when the build is completed. All selected tasks have been executed.
+    //所有的Project（包括任务）构建完后执行这里
+    @Override
+    void buildFinished(BuildResult result) {
+        println "build result = "+result
+    }
+})
+gradle.addProjectEvaluationListener(new ProjectEvaluationListener() {
+    //This method is called immediately before a project is evaluated.
+    //Project开始评估执行这里
+    @Override
+    void beforeEvaluate(Project project) {
+        println "before evaluated = "+project.name
+    }
+    // This method is called when a project has been evaluated, and before
+    // the evaluated project is made available to other projects.
+    // Project评估完执行这里，评估成功后就开始评估下一个Project
+    @Override
+    void afterEvaluate(Project project, ProjectState state) {
+        println "after valuated = "+project.name
+    }
+})
