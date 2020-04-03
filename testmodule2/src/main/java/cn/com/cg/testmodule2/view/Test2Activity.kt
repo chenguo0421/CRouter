@@ -2,11 +2,15 @@ package cn.com.cg.testmodule2.view
 
 import android.content.Context
 import cn.com.cg.base.BaseActivity
+import cn.com.cg.clog.CLog
 import cn.com.cg.router.annotation.CRouter
 import cn.com.cg.router.manager.RouterManager
 import cn.com.cg.testmodule2.R
+import cn.com.cg.testmodule2.bean.JsonBeanChild
+import cn.com.cg.testmodule2.bean.JsonBeanFather
 import cn.com.cg.testmodule2.contract.Test2Contract
 import cn.com.cg.testmodule2.presenter.Test2Presenter
+import com.google.gson.Gson
 import kotlinx.android.synthetic.main.t2_activity.*
 
 /**
@@ -48,6 +52,21 @@ class Test2Activity :Test2Contract.IView, BaseActivity<Test2Contract.IView,Test2
         btn3.setOnClickListener {
             callUtilsMethodByMethodPath()
         }
+
+        btn4.setOnClickListener{
+            testJsonBuild()
+        }
+    }
+
+    private fun testJsonBuild() {
+        var child = JsonBeanChild()
+        child.lastName = "cc"
+        buildJson(child)
+    }
+
+    private fun buildJson(child: Any) {
+        var str = Gson().toJson(child)
+        CLog.d("str = $str")
     }
 
     override fun getBaseActivity(): Context {

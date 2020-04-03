@@ -159,6 +159,11 @@ def reWrite(_parentPath,_file,_packagePath,_baseName,type):
                    continue
                 else:
                    lin = lin.replace("%DialogAnim", "")
+             if "%DialogAttribute" in lin:
+                if 'dialogfragment' != _type:
+                   continue
+                else:
+                   lin = lin.replace("%DialogAttribute", "")
              f2.write(lin)
          f1.close()
          f2.close()

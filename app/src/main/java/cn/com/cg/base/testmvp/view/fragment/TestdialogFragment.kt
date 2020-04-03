@@ -2,6 +2,8 @@ package cn.com.cg.base.testmvp.view.fragment
 
 import android.content.Context
 import android.os.Bundle
+import android.view.Gravity
+import android.view.ViewGroup
 import cn.com.cg.base.BaseDialogFragment
 import cn.com.cg.base.R
 import cn.com.cg.base.testmvp.contract.TestdialogFMContract
@@ -55,5 +57,21 @@ class TestdialogFragment :TestdialogFMContract.IView, BaseDialogFragment<Testdia
 
     override fun initListener() {
 
+    }
+
+    override fun setDialogWidth(): Int {
+        return ViewGroup.LayoutParams.MATCH_PARENT
+    }
+
+    override fun setDialogHeight(): Int {
+        return ViewGroup.LayoutParams.MATCH_PARENT
+    }
+
+    override fun setOutSideAlpha(): Float? {
+        return 1f
+    }
+
+    override fun setGravity(): Int {
+        return Gravity.CENTER
     }
 }

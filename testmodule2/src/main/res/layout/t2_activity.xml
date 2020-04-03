@@ -26,7 +26,11 @@
             android:layout_width="match_parent"
             android:layout_height="40dp"
             android:text="反射调用工具类中被注解的方法"/>
-
+    <Button
+            android:id="@+id/btn4"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:text="测试json转换"/>
 
     <TextView
             android:id="@+id/tv2"
